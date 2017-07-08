@@ -1,0 +1,21 @@
+swagger: '2.0'
+info:
+  title: Dana Backend REST API
+  version: "0.1"
+consumes:
+  - application/json
+produces:
+  - application/json
+paths:
+  /greeting:
+    get:
+      tags: [Greeting]
+      summary: Returns Hello World
+      responses:
+        200:
+          description: Return greeting
+          schema:
+            type: object
+          examples:
+            application/json:
+                greeting: "Hello World"
