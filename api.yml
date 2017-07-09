@@ -8,9 +8,10 @@ produces:
   - application/json
 paths:
   /greeting:
-    get:
+    post:
       tags: [Greeting]
-      summary: Returns Hello World
+      operationId: app.post_greeting
+      summary: Returns a custom greeting.
       responses:
         200:
           description: Return greeting
@@ -18,4 +19,15 @@ paths:
             type: object
           examples:
             application/json:
-                greeting: "Hello World"
+                greeting: "Hello John"
+      parameters:
+        - in: body
+          name: body
+          schema:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "John"
+            required:
+              - name
