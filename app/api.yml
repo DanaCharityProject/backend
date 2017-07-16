@@ -10,7 +10,7 @@ paths:
   /greeting:
     post:
       tags: [Greeting]
-      operationId: app.post_greeting
+      operationId: app.api.post_greeting
       summary: Returns a custom greeting.
       responses:
         200:
