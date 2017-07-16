@@ -3,12 +3,12 @@ from app import create_app
 import pytest
 import json
 
+
 @pytest.fixture
 def client():
-    app = create_app()
+    app = create_app("testing")
     flaskapp = app.app
 
-    flaskapp.testing = True
     test_client = flaskapp.test_client()
 
     ctx = flaskapp.app_context()
