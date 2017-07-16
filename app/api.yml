@@ -31,3 +31,8 @@ paths:
                 example: "John"
             required:
               - name
+      security:
+        - basic: []
+securityDefinitions:
+  basic:
+    type: basic
