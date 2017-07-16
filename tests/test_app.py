@@ -18,6 +18,7 @@ def client():
 
     ctx.pop()
 
+
 def test_post_greeting(client):
     rv = client.post("/greeting", headers={"Content-type": "application/json"}, data=json.dumps({
         "name": "john"
