@@ -14,6 +14,8 @@ class Config():
     DEBUG = False
     TESTING = False
     SECRET_KEY = os.environ.get("SECRET_KEY", "secret-key")
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
 class DevelopmentConfig(Config):
@@ -22,6 +24,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
+    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
 
 
 config = {

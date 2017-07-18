@@ -1,7 +1,13 @@
 import os
 
 import connexion
+from flask_sqlalchemy import SQLAlchemy
+
 from config import config
+
+db = SQLAlchemy()
+
+from . import models
 
 
 def create_app(config_name=None):
@@ -11,6 +17,8 @@ def create_app(config_name=None):
 
     app = connexion.FlaskApp(__name__)
     app.app.config.from_object(config[config_name])
+
+    db.init_app(app.app)
     app.add_api("api.yml")
 
     return app
