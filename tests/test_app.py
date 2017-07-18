@@ -23,6 +23,7 @@ def client():
 
     yield test_client
 
+    db.session.remove()
     db.drop_all()
 
     ctx.pop()
@@ -94,12 +95,21 @@ def test_get_me(client):
     rv = client.get(
         "/me", headers=get_headers(basic_auth=username + ":" + password))
 
-    db.session.remove()
-
     body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 200
     assert body["username"] == username
+
+    rv = client.get(
+        "/me/token", headers=get_headers(basic_auth=username + ":" + password))
+
+    body = json.loads(rv.get_data(as_text=True))
+
+    db.session.remove()
+
+    assert rv.status_code == 201
+    assert models.User.verify_auth_token(
+        body["token"]).username == user.username
 
 
 def test_post_me(client):

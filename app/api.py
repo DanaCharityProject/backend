@@ -25,6 +25,11 @@ def get_me():
     return g.current_user.to_dict()
 
 
+@auth.login_required
+def get_me_token():
+    return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
+
+
 def post_me(body):
     user = User(username=body["username"])
     user.password = body["password"]

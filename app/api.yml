@@ -90,6 +90,22 @@ paths:
                 type: integer
               username:
                 type: string
+  "/me/token":
+    get:
+      tags: [me]
+      operationId: app.api.get_me_token
+      summary: Generate JSON Web Token
+      responses:
+        201:
+          description: New token Created
+          schema:
+            type: object
+            properties:
+              token:
+                type: string
+      security:
+        - basic: []
+
 securityDefinitions:
   basic:
     type: basic
