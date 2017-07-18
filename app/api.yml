@@ -33,6 +33,49 @@ paths:
               - name
       security:
         - basic: []
+  /me:
+    get:
+      tags: [me]
+      operationId: app.api.get_me
+      summary: Return current user account details.
+      responses:
+        200:
+          description: User Account Details
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+                example: 1
+              username:
+                type: string
+                example: "JohnDoe"
+      security:
+        - basic: []
+    post:
+      tags: [me]
+      operationId: app.api.post_me
+      summary: Create new user account
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+              password:
+                type: string
+      responses:
+        201:
+          description: New user created
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              username:
+                type: string
 securityDefinitions:
   basic:
     type: basic
