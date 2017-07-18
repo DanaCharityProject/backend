@@ -15,7 +15,7 @@ class Config():
     TESTING = False
     SECRET_KEY = os.environ.get("SECRET_KEY", "secret-key")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "postgres+pg8000://postgres:test@db/postgres"
 
 
 class DevelopmentConfig(Config):
@@ -24,7 +24,7 @@ class DevelopmentConfig(Config):
 
 class TestingConfig(Config):
     TESTING = True
-    SQLALCHEMY_DATABASE_URI = "sqlite:///:memory:"
+    SQLALCHEMY_DATABASE_URI = "postgres+pg8000://postgres:test@db/postgres"
 
 
 config = {

@@ -16,9 +16,14 @@ def client():
     ctx = flaskapp.app_context()
     ctx.push()
 
+    db.reflect()
+    db.drop_all()
     db.create_all()
+    db.session.commit()
 
     yield test_client
+
+    db.drop_all()
 
     ctx.pop()
 
@@ -50,6 +55,8 @@ def test_get_greeting(client):
     rv = client.get(
         "/greeting", headers=get_headers(basic_auth=username + ":" + password))
 
+    db.session.remove()
+
     assert rv.status_code == 200
     assert "Hello {}.".format(username) in rv.get_data(as_text=True)
 
@@ -68,6 +75,8 @@ def test_post_greeting(client):
         "name": "john"
     }))
 
+    db.session.remove()
+
     assert rv.status_code == 200
     assert "Hello john." in rv.get_data(as_text=True)
 
@@ -85,6 +94,8 @@ def test_get_me(client):
     rv = client.get(
         "/me", headers=get_headers(basic_auth=username + ":" + password))
 
+    db.session.remove()
+
     body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 200
@@ -99,5 +110,7 @@ def test_post_me(client):
         "username": username,
         "password": password
     }))
+
+    db.session.remove()
 
     assert rv.status_code == 201
