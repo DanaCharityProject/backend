@@ -8,6 +8,20 @@ produces:
   - application/json
 paths:
   /greeting:
+    get:
+      tags: [Greeting]
+      operationId: app.api.get_greeting
+      summary: Returns a custom greeting.
+      responses:
+        200:
+          description: Return greeting
+          schema:
+            type: object
+          examples:
+            application/json:
+                greeting: "Hello John"
+      security:
+        - basic: []
     post:
       tags: [Greeting]
       operationId: app.api.post_greeting

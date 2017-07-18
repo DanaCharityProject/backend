@@ -37,6 +37,23 @@ def get_headers(basic_auth=None):
     return headers
 
 
+def test_get_greeting(client):
+    username = "foo"
+    password = "bar"
+
+    user = models.User(username=username)
+    user.password = password
+
+    db.session.add(user)
+    db.session.commit()
+
+    rv = client.get(
+        "/greeting", headers=get_headers(basic_auth=username + ":" + password))
+
+    assert rv.status_code == 200
+    assert "Hello {}.".format(username) in rv.get_data(as_text=True)
+
+
 def test_post_greeting(client):
     username = "foo"
     password = "bar"

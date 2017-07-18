@@ -5,6 +5,14 @@ from .models import User
 
 
 @auth.login_required
+def get_greeting():
+
+    return {
+        "greeting": "Hello {}.".format(g.current_user.username)
+    }
+
+
+@auth.login_required
 def post_greeting(body):
 
     return {
