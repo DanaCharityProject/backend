@@ -8,6 +8,9 @@ from app import create_app, db, models
 
 @pytest.fixture
 def client():
+    """Yields a flask test client fixture for testing http requests.
+    """
+
     app = create_app("testing")
     flaskapp = app.app
 
