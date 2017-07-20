@@ -105,6 +105,24 @@ def test_get_me(client):
     assert rv.status_code == 200
     assert body["username"] == username
 
+    # user details with incorrect password
+    rv = client.get(
+        "/me", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
+
+    assert rv.status_code == 401
+
+    # user details with incorrect username
+    rv = client.get(
+        "/me", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
+
+    assert rv.status_code == 401
+
+    # user details with no auth
+    rv = client.get("/me")
+
+    assert rv.status_code == 401
+
+
     rv = client.get(
         "/me/token", headers=get_headers(basic_auth=username + ":" + password))
 
