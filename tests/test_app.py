@@ -123,6 +123,17 @@ def test_get_me(client):
     assert rv.status_code == 401
 
 
+def test_get_me_token(client):
+    username = "foo"
+    password = "bar"
+
+    user = models.User(username=username)
+    user.password = password
+
+    db.session.add(user)
+    db.session.commit()
+
+    # generate token
     rv = client.get(
         "/me/token", headers=get_headers(basic_auth=username + ":" + password))
 
