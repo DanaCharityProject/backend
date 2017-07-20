@@ -55,6 +55,7 @@ def test_get_greeting(client):
     db.session.add(user)
     db.session.commit()
 
+    # get greeting with username
     rv = client.get(
         "/greeting", headers=get_headers(basic_auth=username + ":" + password))
 
@@ -74,6 +75,7 @@ def test_post_greeting(client):
     db.session.add(user)
     db.session.commit()
 
+    # custom greeting
     rv = client.post("/greeting", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
         "name": "john"
     }))
@@ -94,6 +96,7 @@ def test_get_me(client):
     db.session.add(user)
     db.session.commit()
 
+    # user details with correct auth
     rv = client.get(
         "/me", headers=get_headers(basic_auth=username + ":" + password))
 
@@ -116,6 +119,7 @@ def test_post_me(client):
     username = "foo"
     password = "bar"
 
+    # register new user
     rv = client.post("/me", headers=get_headers(), data=json.dumps({
         "username": username,
         "password": password
