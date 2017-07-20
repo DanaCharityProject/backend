@@ -6,7 +6,7 @@ from app import models
 
 
 @patch("flask_sqlalchemy.SignallingSession", autospec=True)
-def test_user(mock_session):
+def test_user_password(mock_session):
     username = "foo"
     password = "bar"
 
