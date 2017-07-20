@@ -154,6 +154,13 @@ def test_post_me(client):
         "password": password
     }))
 
-    db.session.remove()
-
     assert rv.status_code == 201
+    assert models.User.get_user_by_username(username) is not None
+
+    # username must be unique
+    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+        "username": username,
+        "password": password
+    }))
+
+    assert rv.status_code == 409
