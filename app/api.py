@@ -1,4 +1,5 @@
 from flask import g
+from connexion import NoContent
 
 from .auth import auth
 from .models import User
@@ -34,5 +35,8 @@ def post_me(body):
     user = User(username=body["username"])
     user.password = body["password"]
     user = User.add_user(user)
+
+    if user is None:
+        return NoContent, 409
 
     return user.to_dict(), 201
