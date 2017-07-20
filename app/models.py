@@ -53,6 +53,9 @@ class User(db.Model):
 
     @staticmethod
     def add_user(user):
+        if User.get_user_by_username(user.username) is not None:
+            return None
+
         db.session.add(user)
         db.session.commit()
         return user
