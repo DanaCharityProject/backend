@@ -59,10 +59,10 @@ def test_get_greeting(client):
     rv = client.get(
         "/greeting", headers=get_headers(basic_auth=username + ":" + password))
 
-    db.session.remove()
+    body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 200
-    assert "Hello {}.".format(username) in rv.get_data(as_text=True)
+    assert body["greeting"] == "Hello {}.".format(username)
 
 
 def test_post_greeting(client):
@@ -79,10 +79,10 @@ def test_post_greeting(client):
         "name": "john"
     }))
 
-    db.session.remove()
+    body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 200
-    assert "Hello john." in rv.get_data(as_text=True)
+    assert body["greeting"] == "Hello john."
 
 
 def test_get_me(client):
@@ -107,8 +107,6 @@ def test_get_me(client):
         "/me/token", headers=get_headers(basic_auth=username + ":" + password))
 
     body = json.loads(rv.get_data(as_text=True))
-
-    db.session.remove()
 
     assert rv.status_code == 201
     assert models.User.verify_auth_token(
