@@ -19,10 +19,9 @@ def client():
     ctx = flaskapp.app_context()
     ctx.push()
 
-    db.reflect()
+    db.reflect()  # Necessary for PostgreSQL
     db.drop_all()
     db.create_all()
-    db.session.commit()
 
     yield test_client
 
