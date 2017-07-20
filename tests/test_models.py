@@ -14,9 +14,13 @@ def test_user(mock_session):
 
     user.password = password
 
+    # correct password
     assert user.verify_password(password)
+
+    # incorrect password
     assert not user.verify_password("baz")
 
+    # password is write-only
     with pytest.raises(AttributeError):
         print(user.password)
 
