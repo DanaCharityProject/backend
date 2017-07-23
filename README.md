@@ -3,8 +3,8 @@
 ## Setup
 
 ```bash
-docker build -t dana-backend .
-docker run -p 5000:5000 dana-backend
+docker-compose build
+docker-compose up
 ```
 
 ## Testing
