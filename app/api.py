@@ -3,7 +3,7 @@ from connexion import NoContent
 
 from .auth import auth
 from .models import User
-
+from .validators import is_valid_password
 
 @auth.login_required
 def get_greeting():
@@ -40,3 +40,4 @@ def post_me(body):
         return NoContent, 409
 
     return user.to_dict(), 201
+

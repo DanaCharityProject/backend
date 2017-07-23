@@ -146,7 +146,7 @@ def test_get_me_token(client):
 
 def test_post_me(client):
     username = "foo"
-    password = "bar"
+    password = "X23d$2dr"
 
     # register new user
     rv = client.post("/me", headers=get_headers(), data=json.dumps({
@@ -164,3 +164,11 @@ def test_post_me(client):
     }))
 
     assert rv.status_code == 409
+
+    # Password is validated
+    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+        "username": "foo2",
+        "password": "bar"
+    }))
+    assert rv.status_code == 400
+

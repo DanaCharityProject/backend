@@ -80,6 +80,7 @@ paths:
                 type: string
               password:
                 type: string
+                format: secure_password
       responses:
         201:
           description: New user created
