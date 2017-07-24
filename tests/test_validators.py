@@ -27,8 +27,10 @@ def test_is_valid_username():
     # Good username
     assert validators.is_valid_username("abc123")
     # Too short
-    assert not validators.is_valid_username("9d3")
+    assert not validators.is_valid_username("9d")
     # Too long
     assert not validators.is_valid_username("7978ads7fda--dfadgwew324")
     # Special characters
     assert not validators.is_valid_username("&#JLDS*(7/")
+    # Not string
+    assert not validators.is_valid_username(1)

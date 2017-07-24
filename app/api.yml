@@ -78,9 +78,13 @@ paths:
             properties:
               username:
                 type: string
+                format: username
               password:
                 type: string
                 format: secure_password
+              email:
+                type: string
+                format: email
       responses:
         201:
           description: New user created

@@ -1,9 +1,9 @@
 import re
 from jsonschema import draft4_format_checker
+from validate_email import validate_email
 
 PASSWORD_RE = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$")
-EMAIL_RE = re.compile("^([a-zA-Z0-9-])+@([a-zA-Z])+(.[a-zA-Z]+)*(.[a-zA-Z]+)$")
-USERNAME_RE = re.compile("^([a-zA-Z0-9-]){4,12}$")
+USERNAME_RE = re.compile("^([a-zA-Z0-9-]){3,12}$")
 EMAIL_MIN = 5
 EMAIL_MAX = 40
 
@@ -23,13 +23,15 @@ def is_valid_password(val):
 
 
 @check_given_string
+@draft4_format_checker.checks('email')
 def is_valid_email(email):
     if len(email) < EMAIL_MIN or len(email) > EMAIL_MAX:
         return False
-    return EMAIL_RE.match(email) is not None
+    return validate_email(email)
 
 
 @check_given_string
+@draft4_format_checker.checks('username')
 def is_valid_username(username):
     return USERNAME_RE.match(username) is not None
 
