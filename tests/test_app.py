@@ -172,3 +172,34 @@ def test_post_me(client):
     }))
     assert rv.status_code == 400
 
+
+def test_put_me_password(client):
+    username = "foo"
+    password = "X23d$2dr"
+    new_password = "DYsr2!4Fksh"
+
+    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+        "username": username,
+        "password": password
+    }))
+
+    # New password is valid
+    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+        "password": new_password
+    }))
+
+    assert rv.status_code == 200
+
+    # Old password no longer valid
+    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+        "password": new_password
+    }))
+
+    assert rv.status_code == 401
+
+    # New password mus be secure
+    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + new_password), data=json.dumps({
+        "password": "password"
+    }))
+
+    assert rv.status_code == 400
