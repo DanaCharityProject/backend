@@ -110,6 +110,56 @@ paths:
                 type: string
       security:
         - basic: []
+  /communityresource/register:
+    post:
+      tags: [communityresource]
+      operationId: app.api.post_communityresource_register
+      summary: Create a new community resource
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              number:
+                type: string
+              name:
+                type: string
+              address:
+                type: string
+              contact_name:
+                type: string
+              email:
+                type: string
+                format: email
+              phone_number:
+                type: string
+      responses:
+        200:
+          description: New community resource created
+          schema:
+            type: object
+            properties:
+              id:
+                type: integer
+              number:
+                type: integer
+              name:
+                type: string
+              lat:
+                type: number
+              lon:
+                type: number
+              contact_name:
+                type: string
+              email:
+                type: string
+              phone_number:
+                type: string
+              verified:
+                type: boolean
+      security:
+        - basic: []
 
 securityDefinitions:
   basic:
