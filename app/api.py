@@ -5,6 +5,7 @@ from .auth import auth
 from .models import User
 from .validators import is_valid_password
 
+
 @auth.login_required
 def get_greeting():
 
@@ -41,3 +42,9 @@ def post_me(body):
 
     return user.to_dict(), 201
 
+
+@auth.login_required
+def put_me_password(body):
+    g.current_user.password = body["password"]
+
+    return NoContent, 200

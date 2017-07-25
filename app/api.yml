@@ -95,6 +95,23 @@ paths:
                 type: integer
               username:
                 type: string
+  "/me/password":
+    put:
+      tags: [me]
+      operationId: app.api.put_me_password
+      summary: Update user password
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              password:
+                type: string
+                format: secure_password
+      responses:
+        200:
+          description: Password updated
   "/me/token":
     get:
       tags: [me]
