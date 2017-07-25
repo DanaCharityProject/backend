@@ -3,7 +3,7 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models import User, CommunityResource
+from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo
 from .validators import is_valid_password, is_valid_email
 
 
@@ -48,6 +48,18 @@ def post_me(body):
 def put_me_password(body):
     g.current_user.password = body["password"]
 
+    return NoContent, 200
+
+
+@auth.login_required
+def put_me_info(body):
+    user = g.current_user
+    try:
+        UserManager.edit_user(user.to_dict()["id"], body["username"])
+    except NoExistingUser:
+        return NoContent, 500
+    except InvalidUserInfo:
+        return NoContent, 500
     return NoContent, 200
 
 

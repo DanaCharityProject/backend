@@ -112,6 +112,22 @@ paths:
       responses:
         200:
           description: Password updated
+  "/me/info":
+    put:
+      tags: [me]
+      operationId: app.api.put_me_info
+      summary: Update user information
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+      responses:
+        200:
+          description: User information updated
   "/me/token":
     get:
       tags: [me]

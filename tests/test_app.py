@@ -203,3 +203,32 @@ def test_put_me_password(client):
     }))
 
     assert rv.status_code == 400
+
+
+def test_put_me_info(client):
+    username = "foo"
+    password = "X23d$2dr"
+    new_username = "newuser"
+
+    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+        "username": username,
+        "password": password
+    }))
+
+    # User exists, information is valid
+    rv = client.put("/me/info", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+        "username": new_username
+    }))
+
+    assert rv.status_code == 200
+
+    # Invalid username
+    new_username2 = "veryverylonginvalidusername"
+    rv = client.put("/me/info", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
+        "username": new_username2
+    }))
+
+    assert rv.status_code == 500
+
+    # TODO: User does not exist
+
