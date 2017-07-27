@@ -16,6 +16,16 @@ class InvalidUserInfo(Exception):
         Exception.__init__(self, message)
 
 
+class NoExistingCommunityResource(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
+class InvalidCommunityResourceInfo(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
 class UserManager():
 
     @staticmethod
@@ -135,3 +145,21 @@ class CommunityResource(db.Model):
         return resource
     
  
+ class CommunityResourceManager():
+
+    @staticmethod
+    def edit_community_resource(number):
+        resource = CommunityResource.get_resource_by_number(number)
+
+        try:
+            if resource is None:
+                raise NoExistingCommunityResource("Community Resource does not exist.")
+
+                #TODO
+            if not is_valid_username(new_username):
+                raise InvalidUserInfo("User information is invalid.")
+            user.username = new_username
+        except NoExistingUser:
+            raise
+        except InvalidUserInfo:
+            raise
