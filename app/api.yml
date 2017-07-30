@@ -99,16 +99,30 @@ paths:
     put:
       tags: [me]
       operationId: app.api.put_me_password
-      summary: Update user password
+      summary: Update Password
+      description: |
+        The User Password endpoint allows an authenticated user to change their
+        password. The new password **must** be strong, meeting the requirements detailed
+        in the parameter description.
       parameters:
         - name: body
           in: body
+          description: |
+            Password must have 8 characters include at least on number, letter,
+            and a special character (ie $@$!%*#?&).
           schema:
             type: object
             properties:
               password:
                 type: string
+                description: |
+                  Minimum 8 character string including at least on number, letter,
+                  and special character (ie $@$!%*#?&).
                 format: secure_password
+                example: "Xs2dfkj$"
+                minLength: 8
+            required:
+              - password
       responses:
         200:
           description: Password updated
