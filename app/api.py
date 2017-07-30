@@ -1,9 +1,10 @@
 from flask import g
 from connexion import NoContent
+from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models import User
-from .validators import is_valid_password
+from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo
+from .validators import is_valid_password, is_valid_email
 
 
 @auth.login_required
@@ -48,3 +49,42 @@ def put_me_password(body):
     g.current_user.password = body["password"]
 
     return NoContent, 200
+
+
+@auth.login_required
+def put_me_info(body):
+    user = g.current_user
+    try:
+        UserManager.edit_user(user.to_dict()["id"], body["username"])
+    except NoExistingUser:
+        return NoContent, 500
+    except InvalidUserInfo:
+        return NoContent, 500
+    return NoContent, 200
+
+
+# todo: make decorators for validation checks
+# todo: fix imminent mistakes in api.yml file
+def post_communityresource_register(body):
+    number = int(body["number"])
+    name = body["name"]
+    address = body["address"]
+    contact_name = body["contact_name"]
+    email = body["email"]
+    phone_number = body["phone_number"]
+
+    geolocator = Nominatim()
+    try:
+        _, (lat, lon) = geolocator.geocode(address)
+    except expression as identifier:
+        return NoContent, 500
+
+    resource = CommunityResource(number=number, name=name, lat=lat, lon=lon,
+                                 contact_name=contact_name, email=email, 
+                                 phone_number=phone_number)
+    resource = CommunityResource.add_community_resource(resource)
+    
+    if resource is None:
+        return NoContent, 500
+
+    return resource.to_dict(), 200

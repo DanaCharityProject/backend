@@ -2,8 +2,35 @@ from flask import current_app
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from werkzeug.security import check_password_hash, generate_password_hash
+from .validators import is_valid_username, is_valid_email
 
 from . import db
+
+class NoExistingUser(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
+class InvalidUserInfo(Exception):
+    def __init__(self, message):
+        Exception.__init__(self, message)
+
+
+class UserManager():
+
+    @staticmethod
+    def edit_user(user_id, new_username):
+        user = User.query.get(user_id)
+        try:
+            if user is None:
+                raise NoExistingUser("Something went wrong!")
+            if not is_valid_username(new_username):
+                raise InvalidUserInfo("User information is invalid.")
+            user.username = new_username
+        except NoExistingUser:
+            raise
+        except InvalidUserInfo:
+            raise
 
 
 class User(db.Model):
@@ -13,6 +40,8 @@ class User(db.Model):
     username = db.Column(db.String(64), unique=True,
                          nullable=False, index=True)
     password_hash = db.Column(db.String(256), nullable=False)
+    #email = db.Column(db.String(64), unique=True,
+    #                    nullable=True, index=True)
 
     @property
     def password(self):
@@ -59,3 +88,50 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
         return user
+
+
+class CommunityResource(db.Model):
+    __tablename__ = "community resources"
+
+    id = db.Column(db.Integer, primary_key=True)
+    number = db.Column(db.Integer, unique=True,
+                       nullable=False, index=True)
+    name = db.Column(db.String(64), nullable=False)
+    lat = db.Column(db.Float, nullable=False)
+    lon = db.Column(db.Float, nullable=False)
+    contact_name = db.Column(db.String(64), nullable=False)
+    email = db.Column(db.String(64), nullable=False)
+    phone_number = db.Column(db.String(32), nullable=False)
+    verified = db.Column(db.Boolean, nullable=False)
+
+    @property
+    def location(self):
+        return self.lat, self.lon
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "number": self.number,
+            "name": self.name,
+            "lat": self.lat,
+            "lon": self.lon,
+            "contact_name": self.contact_name,
+            "email": self.email,
+            "phone_number": self.phone_number,
+            "verified": self.verified
+        }
+
+    @staticmethod
+    def get_resource_by_number(number):
+        return CommunityResource.query.filter_by(number=number).first()
+
+    @staticmethod
+    def add_community_resource(resource):
+        if CommunityResource.get_resource_by_number(resource.number) is not None:
+            return None
+
+        db.session.add(resource)
+        db.session.commit()
+        return resource
+    
+ 
