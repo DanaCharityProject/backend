@@ -88,3 +88,24 @@ def post_communityresource_register(body):
         return NoContent, 500
 
     return resource.to_dict(), 200
+
+
+# TODO: Consult Natalie about the following prototype
+def put_community_resource_info(body):
+    community_resource = g.community_resource #?? --> need a get community resource
+
+    geolocator = Nominatim()
+    try:
+        _, (lat, lon) = geolocator.geocode(body["address"])
+    except expression as identifier:
+        return NoContent, 500
+
+    try:
+        CommunityResourceManager.edit_community_resource(community_resource.to_dict()["number"], body["email"], body["phone_number"], body["name"], body["contact_name"], lon, lat) 
+        # for now we are feeding all at once
+    except NoExistingCommunityResource:
+        return NoContent, 500
+    except InvalidCommunityResourceInfo:
+        return NoContent, 500
+    return NoContent, 200
+

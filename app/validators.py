@@ -4,6 +4,8 @@ from validate_email import validate_email
 
 PASSWORD_RE = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$")
 USERNAME_RE = re.compile("^([a-zA-Z0-9-]){3,12}$")
+PHONE_NUMBER_RE = re.compile("^(416)|(647)|(905)\d{7}$") ##
+PHONE_NUMBER_LIMIT = 10 ##
 EMAIL_MIN = 5
 EMAIL_MAX = 40
 
@@ -34,4 +36,12 @@ def is_valid_email(email):
 @draft4_format_checker.checks('username')
 def is_valid_username(username):
     return USERNAME_RE.match(username) is not None
+
+
+@check_given_string ##
+@draft4_format_checker.checks('phone_number')
+def is_valid_phone_number(phone_number):
+    if len(phone_number) != PHONE_NUMBER_LIMIT:
+        return False
+    return PHONE_NUMBER_RE.match(phone_number) is not None
 

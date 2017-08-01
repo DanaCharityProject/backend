@@ -2,7 +2,7 @@ from flask import current_app
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from werkzeug.security import check_password_hash, generate_password_hash
-from .validators import is_valid_username, is_valid_email
+from .validators import is_valid_username, is_valid_email, is_valid_phone_number
 
 from . import db
 
@@ -143,23 +143,29 @@ class CommunityResource(db.Model):
         db.session.add(resource)
         db.session.commit()
         return resource
-    
+
  
- class CommunityResourceManager():
+class CommunityResourceManager():
 
     @staticmethod
-    def edit_community_resource(number):
+    def edit_community_resource(number, new_email, new_phone_number, new_name, new_contact_name, new_lon, new_lat):
         resource = CommunityResource.get_resource_by_number(number)
 
         try:
             if resource is None:
                 raise NoExistingCommunityResource("Community Resource does not exist.")
+            if not is_valid_email(new_email):
+                raise InvalidCommunityResourceInfo("New email address for Community Resource is invalid.")
+            if not is_valid_phone_number(new_phone_number):
+                raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")   
+            #resource.email = new_email    
+            resource.name = new_name
+            resource.contact_name = new_contact_name
+            resource.lon = new_lon
+            resource.lat = new_lat
+            resource.phone_number = new_phone_number
+        except NoExistingCommunityResource:
+            raise
+        except InvalidCommunityResourceInfo:
+            raise
 
-                #TODO
-            if not is_valid_username(new_username):
-                raise InvalidUserInfo("User information is invalid.")
-            user.username = new_username
-        except NoExistingUser:
-            raise
-        except InvalidUserInfo:
-            raise
