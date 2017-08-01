@@ -196,7 +196,7 @@ paths:
   /communityresource/edit:
     put:
       tags: [communityresource]
-      operationId: app.api.put_communityresource_edit
+      operationId: app.api.put_community_resource_edit
       summary: Edit an existing community resource
       parameters:
         - name: body
