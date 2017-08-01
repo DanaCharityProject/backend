@@ -91,7 +91,7 @@ def post_communityresource_register(body):
 
 
 # TODO: Consult Natalie about the following prototype
-def put_community_resource_info(body):
+def put_community_resource_edit(body):
     community_resource = g.community_resource #?? --> need a get community resource
 
     geolocator = Nominatim()
