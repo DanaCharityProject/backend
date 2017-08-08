@@ -158,12 +158,12 @@ class CommunityResourceManager():
                 raise InvalidCommunityResourceInfo("New email address for Community Resource is invalid.")
             if not is_valid_phone_number(new_phone_number):
                 raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")   
-            #resource.email = new_email    
             resource.name = new_name
             resource.contact_name = new_contact_name
             resource.lon = new_lon
             resource.lat = new_lat
             resource.phone_number = new_phone_number
+            resource.email = new_email
         except NoExistingCommunityResource:
             raise
         except InvalidCommunityResourceInfo:
