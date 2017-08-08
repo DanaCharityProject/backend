@@ -3,7 +3,7 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo
+from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo, NoExistingCommunityResource, InvalidCommunityResourceInfo, CommunityResourceManager
 from .validators import is_valid_password, is_valid_email
 
 
@@ -73,6 +73,7 @@ def post_communityresource_register(body):
     email = body["email"]
     phone_number = body["phone_number"]
 
+
     geolocator = Nominatim()
     try:
         _, (lat, lon) = geolocator.geocode(address)
@@ -81,7 +82,7 @@ def post_communityresource_register(body):
 
     resource = CommunityResource(number=number, name=name, lat=lat, lon=lon,
                                  contact_name=contact_name, email=email, 
-                                 phone_number=phone_number)
+                                 phone_number=phone_number, verified=True) #edited just here for now
     resource = CommunityResource.add_community_resource(resource)
     
     if resource is None:
@@ -92,7 +93,7 @@ def post_communityresource_register(body):
 
 # TODO: Consult Natalie about the following prototype
 def put_community_resource_edit(body):
-    community_resource = g.community_resource #?? --> need a get community resource
+    #community_resource = g.community_resource #?? --> need a get community resource
 
     geolocator = Nominatim()
     try:
@@ -100,10 +101,9 @@ def put_community_resource_edit(body):
     except expression as identifier:
         return NoContent, 500
 
-    lat = 0
-    lon = 0
+
     try:
-        CommunityResourceManager.edit_community_resource(community_resource.to_dict()["number"], body["email"], body["phone_number"], body["name"], body["contact_name"], lon, lat) 
+        CommunityResourceManager.edit_community_resource(int(body["number"]), body["email"], body["phone_number"], body["name"], body["contact_name"], lon, lat) 
         # for now we are feeding all at once
     except NoExistingCommunityResource:
         return NoContent, 500
