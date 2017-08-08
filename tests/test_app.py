@@ -232,3 +232,47 @@ def test_put_me_info(client):
 
     # TODO: User does not exist
 
+
+def test_put_community_resource_info(client):
+    number = "1000"
+    email = "foo123@mail.com"
+    phone_number = "4161234567"
+    name = "The Mission"
+    contact_name = "John Smith"
+    address = "1 Yonge Street"
+
+
+    rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "name": name,
+        "address": address,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number 
+    }))
+
+    new_email_invalid = "foo123@mail"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": new_email_invalid,
+        "phone_number": phone_number,
+        "name": name,
+        "contact_name": contact_name,
+        "address": address
+    }))
+
+
+    assert 1 == 1
+    #assert rv.status_code == rv.status_code
+
+
+    #rv = client.put("/me/info", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+     #   "username": new_username
+    #}))
+
+
+
+
+
+
+

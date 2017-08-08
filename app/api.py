@@ -100,6 +100,8 @@ def put_community_resource_edit(body):
     except expression as identifier:
         return NoContent, 500
 
+    lat = 0
+    lon = 0
     try:
         CommunityResourceManager.edit_community_resource(community_resource.to_dict()["number"], body["email"], body["phone_number"], body["name"], body["contact_name"], lon, lat) 
         # for now we are feeding all at once
