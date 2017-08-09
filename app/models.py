@@ -2,7 +2,7 @@ from flask import current_app
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from werkzeug.security import check_password_hash, generate_password_hash
-from .validators import is_valid_username, is_valid_email, is_valid_phone_number
+from .validators import is_valid_username, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 
 from . import db
 
@@ -157,7 +157,9 @@ class CommunityResourceManager():
             if not is_valid_email(new_email):
                 raise InvalidCommunityResourceInfo("New email address for Community Resource is invalid.")
             if not is_valid_phone_number(new_phone_number):
-                raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")   
+                raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")
+            if not is_valid_community_resource_name(new_name):
+                raise InvalidCommunityResourceInfo("New resource center name cannot be empty")
             resource.name = new_name
             resource.contact_name = new_contact_name
             resource.lon = new_lon

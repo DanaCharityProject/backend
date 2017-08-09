@@ -8,6 +8,7 @@ PHONE_NUMBER_RE = re.compile("^(416)|(647)|(905)\d{7}$") ##
 PHONE_NUMBER_LIMIT = 10 ##
 EMAIL_MIN = 5
 EMAIL_MAX = 40
+COMMUNITY_RESOURCE_NAME_MIN = 2
 
 def check_given_string(func):
     def wrapper(stringVal):
@@ -44,4 +45,11 @@ def is_valid_phone_number(phone_number):
     if len(phone_number) != PHONE_NUMBER_LIMIT:
         return False
     return PHONE_NUMBER_RE.match(phone_number) is not None
+
+@check_given_string ##
+@draft4_format_checker.checks('name')
+def is_valid_community_resource_name(name):
+    if len(name) < COMMUNITY_RESOURCE_NAME_MIN:
+        return False
+    return True
 

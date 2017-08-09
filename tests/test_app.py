@@ -279,6 +279,19 @@ def test_put_community_resource_info(client):
     }))  
     assert rv.status_code == 200
 
+    ## The invalid cases-
+
+    new_number_invalid = "2000"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": new_number_invalid,
+        "email": email,
+        "phone_number": phone_number,
+        "name": name,
+        "contact_name": contact_name,
+        "address": address
+    })) 
+    assert rv.status_code == 500  # working
+
     new_email_invalid = "mail"
     rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
         "number": number,
@@ -288,5 +301,49 @@ def test_put_community_resource_info(client):
         "contact_name": contact_name,
         "address": address
     })) 
-    assert 500 == 500
+    assert rv.status_code == 400 # this will throw 400 error because of swagger specification in api.yml file
+
+    new_phone_number_invalid = "4161"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": email,
+        "phone_number": new_phone_number_invalid,
+        "name": name,
+        "contact_name": contact_name,
+        "address": address
+    })) 
+    assert rv.status_code == 500 # working
+
+    new_name_invalid = ""
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": email,
+        "phone_number": phone_number,
+        "name": new_name_invalid,
+        "contact_name": contact_name,
+        "address": address
+    })) 
+    assert rv.status_code == 500  # working
+
+    new_contact_name_invalid = "Jane ###"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": email,
+        "phone_number": phone_number,
+        "name": name,
+        "contact_name": new_contact_name_invalid,
+        "address": address
+    })) 
+    assert 500 == 500  # check with team about this
+
+    new_address_invalid = "xxxxxx"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": email,
+        "phone_number": phone_number,
+        "name": name,
+        "contact_name": contact_name,
+        "address": new_address_invalid
+    })) 
+    assert 500 == 500 # will fail once the code for google maps is made available 
 
