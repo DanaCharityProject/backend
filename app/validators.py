@@ -4,10 +4,10 @@ from validate_email import validate_email
 
 PASSWORD_RE = re.compile("^(?=.*[A-Za-z])(?=.*\d)(?=.*[$@$!%*#?&])[A-Za-z\d$@$!%*#?&]{8,}$")
 USERNAME_RE = re.compile("^([a-zA-Z0-9-]){3,12}$")
-PHONE_NUMBER_RE = re.compile("^(416)|(647)|(905)\d{7}$") ##
-PHONE_NUMBER_LIMIT = 10 ##
 EMAIL_MIN = 5
 EMAIL_MAX = 40
+PHONE_NUMBER_RE = re.compile("^(416)|(647)|(905)\d{7}$")
+PHONE_NUMBER_LIMIT = 10
 COMMUNITY_RESOURCE_NAME_MIN = 2
 
 def check_given_string(func):

@@ -91,7 +91,6 @@ def post_communityresource_register(body):
     return resource.to_dict(), 200
 
 
-# TODO: Consult Natalie about the following prototype
 def put_community_resource_edit(body):
     #community_resource = g.community_resource #?? --> need a get community resource
 
