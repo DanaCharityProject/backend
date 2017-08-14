@@ -229,10 +229,17 @@ def test_put_me_info(client):
     }))
 
     assert rv.status_code == 500
-
     # TODO: User does not exist
 
 
+'''
+"number":"1001"
+"name":"A mission"
+"address":"1 St. Clair Ave"
+"contact_name":"Leslie Woods"
+"email":"email"
+"phone_number":"4167890123"
+'''
 def test_put_community_resource_info(client):
     number = "1000"
     email = "foo123@mail.com"
