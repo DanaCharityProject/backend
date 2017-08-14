@@ -1,0 +1,26 @@
+Overall folder structure
+	- One model file per model (including manager and exceptions)
+	- we won't split the api file yet, however we should create '---------' separators for all the API types
+
+Style
+	- don't use 'me' when referencing the user. Either use 'user', 'current_user' or separate the two as the name inherently suggest the current user is actuating said API (which isn't always true - RESTful API)
+
+	- private functions should follow PEP-8 standards (prefix with underscores and keep them at the bottom)
+
+ api.py
+ 	- remove greeting related functions
+ 	- post_communityresource_register
+ 		- follow how put_me_info is structured
+ 		- validate the body first (use the validator)
+ 			- also put the geolocator in a private function that takes in the address and returns the points
+ 		- use a manager to create the community resource (the manager can also validate)
+ 		- catch any exceptions independently (validation, geocoding, creation) at the bottom and return a useful response (not just generic 500)
+ 	- geo-points should be stored as x,y points in DB (this is a real DB datatype)
+ 	- phone number should be properly validated in validator.py
+
+models.py
+	- move auth_token related functions into auth.py
+	- change number in CommunityResource to charity_number
+
+validators.py
+	- move check_given_string to the bottom
