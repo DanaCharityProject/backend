@@ -47,10 +47,10 @@ paths:
               - name
       security:
         - basic: []
-  /me:
+  /user:
     get:
-      tags: [me]
-      operationId: app.api.get_me
+      tags: [user]
+      operationId: app.api.get_user
       summary: Return current user account details.
       responses:
         200:
@@ -67,8 +67,8 @@ paths:
       security:
         - basic: []
     post:
-      tags: [me]
-      operationId: app.api.post_me
+      tags: [user]
+      operationId: app.api.post_user
       summary: Create new user account
       parameters:
         - name: body
@@ -95,10 +95,10 @@ paths:
                 type: integer
               username:
                 type: string
-  "/me/password":
+  "/user/password":
     put:
-      tags: [me]
-      operationId: app.api.put_me_password
+      tags: [user]
+      operationId: app.api.put_user_password
       summary: Update Password
       description: |
         The User Password endpoint allows an authenticated user to change their
@@ -126,10 +126,10 @@ paths:
       responses:
         200:
           description: Password updated
-  "/me/info":
+  "/user/info":
     put:
-      tags: [me]
-      operationId: app.api.put_me_info
+      tags: [user]
+      operationId: app.api.put_user_info
       summary: Update user information
       parameters:
         - name: body
@@ -142,10 +142,10 @@ paths:
       responses:
         200:
           description: User information updated
-  "/me/token":
+  "/user/token":
     get:
-      tags: [me]
-      operationId: app.api.get_me_token
+      tags: [user]
+      operationId: app.api.get_user_token
       summary: Generate JSON Web Token
       responses:
         201:

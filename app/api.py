@@ -24,16 +24,16 @@ def post_greeting(body):
 
 
 @auth.login_required
-def get_me():
+def get_user():
     return g.current_user.to_dict()
 
 
 @auth.login_required
-def get_me_token():
+def get_user_token():
     return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
 
 
-def post_me(body):
+def post_user(body):
     user = User(username=body["username"])
     user.password = body["password"]
     user = User.add_user(user)
@@ -45,14 +45,14 @@ def post_me(body):
 
 
 @auth.login_required
-def put_me_password(body):
+def put_user_password(body):
     g.current_user.password = body["password"]
 
     return NoContent, 200
 
 
 @auth.login_required
-def put_me_info(body):
+def put_user_info(body):
     user = g.current_user
     try:
         UserManager.edit_user(user.to_dict()["id"], body["username"])
