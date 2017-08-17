@@ -12,13 +12,13 @@ def test_user_password(mock_session):
 
     user = models.User(id=1, username=username)
 
-    user.password = password
+    user._password = password
 
     # correct password
-    assert user.verify_password(password)
+    assert user._verify_password(password)
 
     # incorrect password
-    assert not user.verify_password("baz")
+    assert not user._verify_password("baz")
 
     # password is write-only
     with pytest.raises(AttributeError):
@@ -32,12 +32,12 @@ def test_user_token(mock_session, mock_current_app, mock_query):
     username = "foo"
     password = "bar"
     user = models.User(id=1, username=username)
-    user.password = password
+    user._password = password
 
     mock_current_app.config = {"SECRET_KEY": "secret-key"}
     mock_query.get = {user.id: user}.get
 
-    token = user.generate_auth_token()
+    token = user._generate_auth_token()
 
     user_ = models.User.verify_auth_token(token)
 
@@ -49,7 +49,7 @@ def test_user_token(mock_session, mock_current_app, mock_query):
     # incorrect token
     assert user_ is None
 
-    token = user.generate_auth_token(expiration=-1)
+    token = user._generate_auth_token(expiration=-1)
     user_ = models.User.verify_auth_token(token)
 
     # expired token

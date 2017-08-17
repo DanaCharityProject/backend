@@ -50,7 +50,7 @@ def test_get_greeting(client):
     password = "bar"
 
     user = models.User(username=username)
-    user.password = password
+    user._password = password
 
     db.session.add(user)
     db.session.commit()
@@ -70,7 +70,7 @@ def test_post_greeting(client):
     password = "bar"
 
     user = models.User(username=username)
-    user.password = password
+    user._password = password
 
     db.session.add(user)
     db.session.commit()
@@ -91,7 +91,7 @@ def test_get_user(client):
     password = "bar"
 
     user = models.User(username=username)
-    user.password = password
+    user._password = password
 
     db.session.add(user)
     db.session.commit()
@@ -128,7 +128,7 @@ def test_get_user_token(client):
     password = "bar"
 
     user = models.User(username=username)
-    user.password = password
+    user._password = password
 
     db.session.add(user)
     db.session.commit()

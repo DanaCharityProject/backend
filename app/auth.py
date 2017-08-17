@@ -10,7 +10,7 @@ auth = HTTPBasicAuth()
 def verify_password(username, password):
     user = User.get_user_by_username(username)
 
-    if not user or not user.verify_password(password):
+    if not user or not user._verify_password(password):
         return False
 
     g.current_user = user
