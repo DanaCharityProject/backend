@@ -25,28 +25,28 @@ def post_greeting(body):
 
 @auth.login_required
 def get_user():
-    return g.current_user._to_dict()
+    return g.current_user.to_dict()
 
 
 @auth.login_required
 def get_user_token():
-    return {"token": g.current_user._generate_auth_token().decode("ascii")}, 201
+    return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
 
 
 def post_user(body):
     user = User(username=body["username"])
-    user._password = body["password"]
+    user.password = body["password"]
     user = User.add_user(user)
 
     if user is None:
         return NoContent, 409
 
-    return user._to_dict(), 201
+    return user.to_dict(), 201
 
 
 @auth.login_required
 def put_user_password(body):
-    g.current_user._password = body["password"]
+    g.current_user.password = body["password"]
 
     return NoContent, 200
 
@@ -55,7 +55,7 @@ def put_user_password(body):
 def put_user_info(body):
     user = g.current_user
     try:
-        UserManager.edit_user(user._to_dict()["id"], body["username"])
+        UserManager.edit_user(user.to_dict()["id"], body["username"])
     except NoExistingUser:
         return NoContent, 500
     except InvalidUserInfo:
@@ -87,4 +87,4 @@ def post_communityresource_register(body):
     if resource is None:
         return NoContent, 500
 
-    return resource._to_dict(), 200
+    return resource.to_dict(), 200

@@ -6,7 +6,6 @@ from .validators import is_valid_username, is_valid_email
 
 from . import db
 
-
 class NoExistingUser(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
@@ -48,6 +47,17 @@ class User(db.Model):
     def password(self):
         raise AttributeError('password is not a readable attribute')
 
+    @password.setter
+    def password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def verify_password(self, password):
+        return check_password_hash(self.password_hash, password)
+
+    def generate_auth_token(self, expiration=600):
+        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        return s.dumps({'id': self.id})
+
     @staticmethod
     def verify_auth_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
@@ -59,6 +69,12 @@ class User(db.Model):
             return None    # invalid token
         user = User.query.get(data['id'])
         return user
+
+    def to_dict(self):
+        return {
+            "id": self.id,
+            "username": self.username
+        }
 
     @staticmethod
     def get_user_by_username(username):
@@ -72,23 +88,6 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
         return user
-
-    @password.setter
-    def _password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def _verify_password(self, password):
-        return check_password_hash(self.password_hash, password)
-
-    def _generate_auth_token(self, expiration=600):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({'id': self.id})
-
-    def _to_dict(self):
-        return {
-            "id": self.id,
-            "username": self.username
-        }
 
 
 class CommunityResource(db.Model):
@@ -109,20 +108,7 @@ class CommunityResource(db.Model):
     def location(self):
         return self.lat, self.lon
 
-    @staticmethod
-    def get_resource_by_number(number):
-        return CommunityResource.query.filter_by(number=number).first()
-
-    @staticmethod
-    def add_community_resource(resource):
-        if CommunityResource.get_resource_by_number(resource.number) is not None:
-            return None
-
-        db.session.add(resource)
-        db.session.commit()
-        return resource
-
-    def _to_dict(self):
+    def to_dict(self):
         return {
             "id": self.id,
             "number": self.number,
@@ -135,3 +121,17 @@ class CommunityResource(db.Model):
             "verified": self.verified
         }
 
+    @staticmethod
+    def get_resource_by_number(number):
+        return CommunityResource.query.filter_by(number=number).first()
+
+    @staticmethod
+    def add_community_resource(resource):
+        if CommunityResource.get_resource_by_number(resource.number) is not None:
+            return None
+
+        db.session.add(resource)
+        db.session.commit()
+        return resource
+    
+ 

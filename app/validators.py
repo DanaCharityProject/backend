@@ -34,3 +34,4 @@ def is_valid_email(email):
 @draft4_format_checker.checks('username')
 def is_valid_username(username):
     return USERNAME_RE.match(username) is not None
+
