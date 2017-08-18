@@ -1,7 +1,7 @@
 from flask import g
 from flask_httpauth import HTTPBasicAuth
 
-from .models import User
+from .user_model import User
 
 auth = HTTPBasicAuth()
 
