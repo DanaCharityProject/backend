@@ -148,7 +148,7 @@ class CommunityResource(db.Model):
 class CommunityResourceManager():
 
     @staticmethod
-    def edit_community_resource(number, new_email, new_phone_number, new_name, new_contact_name, new_lon, new_lat):
+    def edit_community_resource(number, new_name, new_lat, new_lon, new_contact_name, new_email, new_phone_number):
         resource = CommunityResource.get_resource_by_number(number)
 
         try:
@@ -161,11 +161,11 @@ class CommunityResourceManager():
             if not is_valid_community_resource_name(new_name):
                 raise InvalidCommunityResourceInfo("New resource center name cannot be empty")
             resource.name = new_name
-            resource.contact_name = new_contact_name
-            resource.lon = new_lon
             resource.lat = new_lat
-            resource.phone_number = new_phone_number
+            resource.lon = new_lon
+            resource.contact_name = new_contact_name
             resource.email = new_email
+            resource.phone_number = new_phone_number
         except NoExistingCommunityResource:
             raise
         except InvalidCommunityResourceInfo:

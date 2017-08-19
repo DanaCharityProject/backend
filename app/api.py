@@ -92,18 +92,15 @@ def post_communityresource_register(body):
 
 
 def put_community_resource_edit(body):
-    #community_resource = g.community_resource #?? --> need a get community resource
 
-    geolocator = Nominatim()
+    geolocator = Nominatim() # will copy over from master branch
     try:
         _, (lat, lon) = geolocator.geocode(body["address"])
     except expression as identifier:
         return NoContent, 500
 
-
     try:
-        CommunityResourceManager.edit_community_resource(int(body["number"]), body["email"], body["phone_number"], body["name"], body["contact_name"], lon, lat) 
-        # for now we are feeding all at once
+        CommunityResourceManager.edit_community_resource(int(body["number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"]) 
     except NoExistingCommunityResource:
         return NoContent, 500
     except InvalidCommunityResourceInfo:

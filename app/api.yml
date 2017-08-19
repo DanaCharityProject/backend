@@ -206,16 +206,16 @@ paths:
             properties:
               number:
                 type: string
+              name:
+                type: string
+              address:
+                type: string
+              contact_name:
+                type: string
               email:
                 type: string
                 format: email
               phone_number:
-                type: string
-              name:
-                type: string
-              contact_name:
-                type: string
-              address:
                 type: string
       responses:
         200:
