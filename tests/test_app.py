@@ -231,4 +231,3 @@ def test_put_user_info(client):
     assert rv.status_code == 500
 
     # TODO: User does not exist
-

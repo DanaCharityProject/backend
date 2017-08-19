@@ -19,16 +19,20 @@ class User(db.Model):
     def password(self):
         raise AttributeError('password is not a readable attribute')
 
+
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
+
     def verify_password(self, password):
         return check_password_hash(self.password_hash, password)
+
 
     def generate_auth_token(self, expiration=600):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
         return s.dumps({'id': self.id})
+
 
     @staticmethod
     def verify_auth_token(token):
@@ -42,15 +46,18 @@ class User(db.Model):
         user = User.query.get(data['id'])
         return user
 
+
     def to_dict(self):
         return {
             "id": self.id,
             "username": self.username
         }
 
+
     @staticmethod
     def get_user_by_username(username):
         return User.query.filter_by(username=username).first()
+
 
     @staticmethod
     def add_user(user):
