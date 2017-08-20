@@ -3,8 +3,10 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo, NoExistingCommunityResource, InvalidCommunityResourceInfo, CommunityResourceManager
+from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo
 from .validators import is_valid_password, is_valid_email
+from .community_resource_manager_model import CommunityResourceManager
+from .exception_models import InvalidCommunityResourceInfo, NoExistingCommunityResource
 
 
 @auth.login_required
