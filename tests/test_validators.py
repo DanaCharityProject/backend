@@ -23,6 +23,7 @@ def test_is_valid_email():
     # Too short
     assert not validators.is_valid_email("a@bd")
 
+
 def test_is_valid_username():
     # Good username
     assert validators.is_valid_username("abc123")

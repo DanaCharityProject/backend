@@ -7,8 +7,6 @@ from config import config
 
 db = SQLAlchemy()
 
-from . import models
-
 
 def create_app(config_name=None):
 

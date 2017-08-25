@@ -3,7 +3,8 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models import User, CommunityResource, UserManager, NoExistingUser, InvalidUserInfo
+from .models.user import User, UserManager, NoExistingUser, InvalidUserInfo
+from .models.community_resource import CommunityResource
 from .validators import is_valid_password, is_valid_email
 
 
@@ -16,6 +17,19 @@ def get_greeting():
 
 
 @auth.login_required
+def get_user():
+    return g.current_user.to_dict()
+
+
+@auth.login_required
+def get_user_token():
+    return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
+
+
+#   ---------
+
+
+@auth.login_required
 def post_greeting(body):
 
     return {
@@ -23,17 +37,7 @@ def post_greeting(body):
     }
 
 
-@auth.login_required
-def get_me():
-    return g.current_user.to_dict()
-
-
-@auth.login_required
-def get_me_token():
-    return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
-
-
-def post_me(body):
+def post_user(body):
     user = User(username=body["username"])
     user.password = body["password"]
     user = User.add_user(user)
@@ -42,25 +46,6 @@ def post_me(body):
         return NoContent, 409
 
     return user.to_dict(), 201
-
-
-@auth.login_required
-def put_me_password(body):
-    g.current_user.password = body["password"]
-
-    return NoContent, 200
-
-
-@auth.login_required
-def put_me_info(body):
-    user = g.current_user
-    try:
-        UserManager.edit_user(user.to_dict()["id"], body["username"])
-    except NoExistingUser:
-        return NoContent, 500
-    except InvalidUserInfo:
-        return NoContent, 500
-    return NoContent, 200
 
 
 # todo: make decorators for validation checks
@@ -80,11 +65,33 @@ def post_communityresource_register(body):
         return NoContent, 500
 
     resource = CommunityResource(number=number, name=name, lat=lat, lon=lon,
-                                 contact_name=contact_name, email=email, 
+                                 contact_name=contact_name, email=email,
                                  phone_number=phone_number)
     resource = CommunityResource.add_community_resource(resource)
-    
+
     if resource is None:
         return NoContent, 500
 
     return resource.to_dict(), 200
+
+
+#   ---------
+
+
+@auth.login_required
+def put_user_password(body):
+    g.current_user.password = body["password"]
+
+    return NoContent, 200
+
+
+@auth.login_required
+def put_user_info(body):
+    user = g.current_user
+    try:
+        UserManager.edit_user(user.to_dict()["id"], body["username"])
+    except NoExistingUser:
+        return NoContent, 500
+    except InvalidUserInfo:
+        return NoContent, 500
+    return NoContent, 200

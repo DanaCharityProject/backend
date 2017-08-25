@@ -3,7 +3,8 @@ import json
 
 import pytest
 
-from app import create_app, db, models
+from app import create_app, db
+import app.models as models
 
 
 @pytest.fixture
@@ -49,7 +50,7 @@ def test_get_greeting(client):
     username = "foo"
     password = "bar"
 
-    user = models.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -69,7 +70,7 @@ def test_post_greeting(client):
     username = "foo"
     password = "bar"
 
-    user = models.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -86,11 +87,11 @@ def test_post_greeting(client):
     assert body["greeting"] == "Hello john."
 
 
-def test_get_me(client):
+def test_get_user(client):
     username = "foo"
     password = "bar"
 
-    user = models.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -98,7 +99,7 @@ def test_get_me(client):
 
     # user details with correct auth
     rv = client.get(
-        "/me", headers=get_headers(basic_auth=username + ":" + password))
+        "/user", headers=get_headers(basic_auth=username + ":" + password))
 
     body = json.loads(rv.get_data(as_text=True))
 
@@ -107,27 +108,27 @@ def test_get_me(client):
 
     # user details with incorrect password
     rv = client.get(
-        "/me", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
+        "/user", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
 
     assert rv.status_code == 401
 
     # user details with incorrect username
     rv = client.get(
-        "/me", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
+        "/user", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
 
     assert rv.status_code == 401
 
     # user details with no auth
-    rv = client.get("/me")
+    rv = client.get("/user")
 
     assert rv.status_code == 401
 
 
-def test_get_me_token(client):
+def test_get_user_token(client):
     username = "foo"
     password = "bar"
 
-    user = models.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -135,30 +136,30 @@ def test_get_me_token(client):
 
     # generate token
     rv = client.get(
-        "/me/token", headers=get_headers(basic_auth=username + ":" + password))
+        "/user/token", headers=get_headers(basic_auth=username + ":" + password))
 
     body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 201
-    assert models.User.verify_auth_token(
+    assert models.user.User.verify_auth_token(
         body["token"]).username == user.username
 
 
-def test_post_me(client):
+def test_post_user(client):
     username = "foo"
     password = "X23d$2dr"
 
     # register new user
-    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+    rv = client.post("/user", headers=get_headers(), data=json.dumps({
         "username": username,
         "password": password
     }))
 
     assert rv.status_code == 201
-    assert models.User.get_user_by_username(username) is not None
+    assert models.user.User.get_user_by_username(username) is not None
 
     # username must be unique
-    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+    rv = client.post("/user", headers=get_headers(), data=json.dumps({
         "username": username,
         "password": password
     }))
@@ -166,57 +167,57 @@ def test_post_me(client):
     assert rv.status_code == 409
 
     # Password is validated
-    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+    rv = client.post("/user", headers=get_headers(), data=json.dumps({
         "username": "foo2",
         "password": "bar"
     }))
     assert rv.status_code == 400
 
 
-def test_put_me_password(client):
+def test_put_user_password(client):
     username = "foo"
     password = "X23d$2dr"
     new_password = "DYsr2!4Fksh"
 
-    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+    rv = client.post("/user", headers=get_headers(), data=json.dumps({
         "username": username,
         "password": password
     }))
 
     # New password is valid
-    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
         "password": new_password
     }))
 
     assert rv.status_code == 200
 
     # Old password no longer valid
-    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
         "password": new_password
     }))
 
     assert rv.status_code == 401
 
     # New password mus be secure
-    rv = client.put("/me/password", headers=get_headers(basic_auth=username + ":" + new_password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + new_password), data=json.dumps({
         "password": "password"
     }))
 
     assert rv.status_code == 400
 
 
-def test_put_me_info(client):
+def test_put_user_info(client):
     username = "foo"
     password = "X23d$2dr"
     new_username = "newuser"
 
-    rv = client.post("/me", headers=get_headers(), data=json.dumps({
+    rv = client.post("/user", headers=get_headers(), data=json.dumps({
         "username": username,
         "password": password
     }))
 
     # User exists, information is valid
-    rv = client.put("/me/info", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user/info", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
         "username": new_username
     }))
 
@@ -224,11 +225,10 @@ def test_put_me_info(client):
 
     # Invalid username
     new_username2 = "veryverylonginvalidusername"
-    rv = client.put("/me/info", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
+    rv = client.put("/user/info", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
         "username": new_username2
     }))
 
     assert rv.status_code == 500
 
     # TODO: User does not exist
-
