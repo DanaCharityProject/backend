@@ -3,7 +3,8 @@ import json
 
 import pytest
 
-from app import create_app, db, user_model, user_manager_model, community_resource_model, exception_models
+from app import create_app, db
+import app.models as models
 
 
 @pytest.fixture
@@ -49,7 +50,7 @@ def test_get_greeting(client):
     username = "foo"
     password = "bar"
 
-    user = user_model.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -69,7 +70,7 @@ def test_post_greeting(client):
     username = "foo"
     password = "bar"
 
-    user = user_model.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -90,7 +91,7 @@ def test_get_user(client):
     username = "foo"
     password = "bar"
 
-    user = user_model.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -127,7 +128,7 @@ def test_get_user_token(client):
     username = "foo"
     password = "bar"
 
-    user = user_model.User(username=username)
+    user = models.user.User(username=username)
     user.password = password
 
     db.session.add(user)
@@ -140,7 +141,7 @@ def test_get_user_token(client):
     body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 201
-    assert user_model.User.verify_auth_token(
+    assert models.user.User.verify_auth_token(
         body["token"]).username == user.username
 
 
@@ -155,7 +156,7 @@ def test_post_user(client):
     }))
 
     assert rv.status_code == 201
-    assert user_model.User.get_user_by_username(username) is not None
+    assert models.user.User.get_user_by_username(username) is not None
 
     # username must be unique
     rv = client.post("/user", headers=get_headers(), data=json.dumps({

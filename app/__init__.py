@@ -7,8 +7,6 @@ from config import config
 
 db = SQLAlchemy()
 
-from . import user_model, user_manager_model, community_resource_model, exception_models
-
 
 def create_app(config_name=None):
 

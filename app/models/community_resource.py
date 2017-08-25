@@ -1,4 +1,5 @@
-from . import db
+from .. import db
+
 
 class CommunityResource(db.Model):
     __tablename__ = "community resources"
@@ -18,7 +19,6 @@ class CommunityResource(db.Model):
     def location(self):
         return self.lat, self.lon
 
-
     def to_dict(self):
         return {
             "id": self.id,
@@ -32,11 +32,9 @@ class CommunityResource(db.Model):
             "verified": self.verified
         }
 
-
     @staticmethod
     def get_resource_by_number(number):
         return CommunityResource.query.filter_by(number=number).first()
-
 
     @staticmethod
     def add_community_resource(resource):
@@ -46,4 +44,3 @@ class CommunityResource(db.Model):
         db.session.add(resource)
         db.session.commit()
         return resource
-    

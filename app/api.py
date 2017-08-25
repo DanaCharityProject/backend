@@ -3,10 +3,8 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .user_model import User
-from .community_resource_model import CommunityResource
-from .user_manager_model import UserManager
-from .exception_models import NoExistingUser, InvalidUserInfo
+from .models.user import User, UserManager, NoExistingUser, InvalidUserInfo
+from .models.community_resource import CommunityResource
 from .validators import is_valid_password, is_valid_email
 
 
@@ -67,10 +65,10 @@ def post_communityresource_register(body):
         return NoContent, 500
 
     resource = CommunityResource(number=number, name=name, lat=lat, lon=lon,
-                                 contact_name=contact_name, email=email, 
+                                 contact_name=contact_name, email=email,
                                  phone_number=phone_number)
     resource = CommunityResource.add_community_resource(resource)
-    
+
     if resource is None:
         return NoContent, 500
 
