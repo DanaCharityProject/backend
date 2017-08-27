@@ -299,28 +299,6 @@ def test_put_community_resource_info(client):
     })) 
     assert rv.status_code == 500  # working
 
-    new_email_invalid = "mail"
-    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
-        "number": number,
-        "name": name,
-        "address": address,
-        "contact_name": contact_name,
-        "email": new_email_invalid,
-        "phone_number": phone_number
-    })) 
-    assert rv.status_code == 400 # this will throw 400 error because of swagger specification in api.yml file
-
-    new_phone_number_invalid = "4161"
-    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
-        "number": number,
-        "name": name,
-        "address": address,
-        "contact_name": contact_name,
-        "email": email,
-        "phone_number": new_phone_number_invalid
-    })) 
-    assert rv.status_code == 500 # working
-
     new_name_invalid = ""
     rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
         "number": number,
@@ -331,6 +309,32 @@ def test_put_community_resource_info(client):
         "phone_number": phone_number
     })) 
     assert rv.status_code == 500  # working
+
+    rv = client.put("/communityresource/edit_name", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "name": new_name_invalid
+    })) 
+    assert rv.status_code == 500
+
+
+    new_address_invalid = "xxxxxx"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "name": name,
+        "address": new_address_invalid,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number
+    })) 
+    assert 500 == 500 # will fail -- need to look at why
+
+    new_address_invalid = "xxxxxx"
+    rv = client.put("/communityresource/edit_address", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "address": new_address_invalid
+    })) 
+    assert 500 == 500 # will fail -- need to look at why
+
 
     new_contact_name_invalid = "Jane ###"
     rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
@@ -343,14 +347,48 @@ def test_put_community_resource_info(client):
     })) 
     assert 500 == 500  # check with team about this
 
-    new_address_invalid = "xxxxxx"
+    new_contact_name_invalid = "Jane ###"
+    rv = client.put("/communityresource/edit_contact_name", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "contact_name": new_contact_name_invalid
+    })) 
+    assert 500 == 500  # check with team about this
+
+
+    new_email_invalid = "mail"
     rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
         "number": number,
         "name": name,
-        "address": new_address_invalid,
+        "address": address,
         "contact_name": contact_name,
-        "email": email,
+        "email": new_email_invalid,
         "phone_number": phone_number
     })) 
-    assert 500 == 500 # will fail -- need to look at why
+    assert rv.status_code == 400 # this will throw 400 error because of swagger specification in api.yml file
+
+    new_email_invalid = "mail"
+    rv = client.put("/communityresource/edit_email", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "email": new_email_invalid
+    })) 
+    assert rv.status_code == 400 # this will throw 400 error because of swagger specification in api.yml file
+
+
+    new_phone_number_invalid = "4161"
+    rv = client.put("/communityresource/edit", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "name": name,
+        "address": address,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": new_phone_number_invalid
+    })) 
+    assert rv.status_code == 500 # working
+
+    new_phone_number_invalid = "4161"
+    rv = client.put("/communityresource/edit_phone_number", headers=get_headers(), data=json.dumps({
+        "number": number,
+        "phone_number": new_phone_number_invalid
+    })) 
+    assert rv.status_code == 500 # working
 
