@@ -80,6 +80,10 @@ class UserManager():
         except InvalidUserInfo:
             raise
 
+    @staticmethod
+    def change_password(user, password):
+        user.password = password
+
 
 class NoExistingUser(Exception):
     def __init__(self, message):

@@ -80,8 +80,7 @@ def post_communityresource_register(body):
 
 @auth.login_required
 def put_user_password(body):
-    g.current_user.password = body["password"]
-
+    UserManager.change_password(g.current_user, body["password"])
     return NoContent, 200
 
 
