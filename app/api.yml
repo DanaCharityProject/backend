@@ -157,7 +157,7 @@ paths:
                 type: string
       security:
         - basic: []
-  /communityresource/register:
+  /communityresource:
     post:
       tags: [communityresource]
       operationId: app.api.post_communityresource_register
@@ -205,16 +205,19 @@ paths:
                 type: string
               verified:
                 type: boolean
-      security:
-        - basic: []
-  /communityresource/edit:
+  "/communityresource/info":
     put:
       tags: [communityresource]
       operationId: app.api.put_community_resource_edit
       summary: Edit an existing community resource
+      description: |
+        The community resource endpoint allows a user to edit
+        an existing community resource.
       parameters:
         - name: body
           in: body
+          description: |
+            The different values accepted are...
           schema:
             type: object
             properties:
@@ -234,230 +237,6 @@ paths:
       responses:
         200:
           description: Community resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
-      security:
-        - basic: []
-  /communityresource/edit_name:
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_community_resource_edit_name
-      summary: Edit the name of an existing community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-      responses:
-        200:
-          description: Name of community resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
-      security:
-        - basic: []  
-  /communityresource/edit_address:
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_community_resource_edit_address
-      summary: Edit address of an existing community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              address:
-                type: string
-      responses:
-        200:
-          description: Address of community resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
-      security:
-        - basic: []
-  /communityresource/edit_contact_name:
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_community_resource_edit_contact_name
-      summary: Edit contact name of an existing community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              contact_name:
-                type: string
-      responses:
-        200:
-          description: Contact name of community resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
-      security:
-        - basic: []
-  /communityresource/edit_email:
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_community_resource_edit_email
-      summary: Update email of an existing community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              email:
-                type: string
-                format: email
-      responses:
-        200:
-          description: Email of ommunity resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
-      security:
-        - basic: []
-  /communityresource/edit_phone_number:
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_community_resource_edit_phone_number
-      summary: Edit phone number of an existing community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              address:
-                type: string
-              contact_name:
-                type: string
-              email:
-                type: string
-                format: email
-              phone_number:
-                type: string
-      responses:
-        200:
-          description: Phone number of community resource edited
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              lat:
-                type: number
-              lon:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
       security:
         - basic: []
 

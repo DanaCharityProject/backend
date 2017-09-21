@@ -92,70 +92,6 @@ def put_community_resource_edit(body):
     return NoContent, 200
 
 
-def put_community_resource_edit_name(body):
-
-    try:
-        CommunityResourceManager.edit_community_resource_name(int(body["number"]), body["name"]) 
-    except NoExistingCommunityResource:
-        return NoContent, 500
-    except InvalidCommunityResourceInfo:
-        return NoContent, 500
-    return NoContent, 200
-
-
-def put_community_resource_edit_address(body):
-
-    geolocator = Nominatim() # will copy over from master branch
-    try:
-        _, (lat, lon) = geolocator.geocode(body["address"])
-    except expression as identifier:
-        return NoContent, 500
-
-    try:
-        CommunityResourceManager.edit_community_resource_location(int(body["number"]), lat, lon) 
-    except NoExistingCommunityResource:
-        return NoContent, 500
-    except InvalidCommunityResourceInfo:
-        return NoContent, 500
-    return NoContent, 200
-
-
-def put_community_resource_edit_contact_name(body):
-
-    try:
-        CommunityResourceManager.edit_community_resource_contact_name(int(body["number"]), body["contact_name"]) 
-    except NoExistingCommunityResource:
-        return NoContent, 500
-    except InvalidCommunityResourceInfo:
-        return NoContent, 500
-    return NoContent, 200
-
-
-def put_community_resource_edit_email(body):
-
-    try:
-        CommunityResourceManager.edit_community_resource_email(int(body["number"]), body["email"]) 
-    except NoExistingCommunityResource:
-        return NoContent, 500
-    except InvalidCommunityResourceInfo:
-        return NoContent, 500
-    return NoContent, 200
-
-
-def put_community_resource_edit_phone_number(body):
-
-    try:
-        CommunityResourceManager.edit_community_resource_phone_number(int(body["number"]), body["phone_number"]) 
-    except NoExistingCommunityResource:
-        return NoContent, 500
-    except InvalidCommunityResourceInfo:
-        return NoContent, 500
-    return NoContent, 200
-
-
-#   ---------
-
-
 @auth.login_required
 def put_user_password(body):
     g.current_user.password = body["password"]
@@ -173,3 +109,5 @@ def put_user_info(body):
     except InvalidUserInfo:
         return NoContent, 500
     return NoContent, 200
+
+    
