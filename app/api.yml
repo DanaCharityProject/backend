@@ -212,28 +212,50 @@ paths:
       summary: Edit an existing community resource
       description: |
         The community resource endpoint allows a user to edit
-        an existing community resource.
+        an existing community resource. Currently the Backend
+        method takes in all the community resource field values
+        at once.
       parameters:
         - name: body
           in: body
           description: |
-            The different values accepted are...
+            The parameters for this function are- the number(id) of
+            a community resource, the organization name, the address,
+            the contact person's name, contact email address and the
+            phone number of the contact person.
           schema:
             type: object
             properties:
               number:
                 type: string
+                description: |
+                  The number must exist in the system.
               name:
                 type: string
+                description: |
+                  Name of the organization cannot be empty string.
               address:
                 type: string
+                description: |
+                  The address of the community resource must exist.
               contact_name:
                 type: string
+                description: |
+                  The name of a person cannot have non-alphabet
+                  characters.
               email:
                 type: string
                 format: email
+                  description: |
+                    Must have a proper email format -
+                    <name>@<domain>.<domain-suffix> .
               phone_number:
                 type: string
+                  description: |
+                    The phone number has to be purely numeric and
+                    of length 10. It has to start with 414 or 905
+                    or 647 since we are currently focused on 
+                    community resource centers in Toronto.
       responses:
         200:
           description: Community resource edited
