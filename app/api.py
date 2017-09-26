@@ -77,9 +77,10 @@ def post_communityresource_register(body):
 
 def put_community_resource_edit(body):
 
-    geolocator = Nominatim() # will copy over from master branch
+    #geolocator = Nominatim() # will copy over from master branch
     try:
-        _, (lat, lon) = geolocator.geocode(body["address"])
+        #_, (lat, lon) = geolocator.geocode(body["address"])
+        _, (lat, lon) = find_location(body["address"])
     except expression as identifier:
         return NoContent, 500
 
@@ -90,6 +91,15 @@ def put_community_resource_edit(body):
     except InvalidCommunityResourceInfo:
         return NoContent, 500
     return NoContent, 200
+
+
+def find_location(body_address):
+
+    geolocator = Nominatim()
+    try:
+        return geolocator.geocode(body_address)
+    except expression as identifier:
+        return NoContent, 500
 
 
 @auth.login_required

@@ -211,10 +211,7 @@ paths:
       operationId: app.api.put_community_resource_edit
       summary: Edit an existing community resource
       description: |
-        The community resource endpoint allows a user to edit
-        an existing community resource. Currently the Backend
-        method takes in all the community resource field values
-        at once.
+        The community resource endpoint allows a user to edit an existing community resource. Currently the Backend method takes in all the community resource field values at once.
       parameters:
         - name: body
           in: body
@@ -246,16 +243,15 @@ paths:
               email:
                 type: string
                 format: email
-                  description: |
-                    Must have a proper email format -
-                    <name>@<domain>.<domain-suffix> .
+                description: |
+                  Must have a proper email format - <name>@<domain>.<domain-suffix>
               phone_number:
                 type: string
-                  description: |
-                    The phone number has to be purely numeric and
-                    of length 10. It has to start with 414 or 905
-                    or 647 since we are currently focused on 
-                    community resource centers in Toronto.
+                description: |
+                  The phone number has to be purely numeric and
+                  of length 10. It has to start with 414 or 905
+                  or 647 since we are currently focused on 
+                  community resource centers in Toronto.
       responses:
         200:
           description: Community resource edited
