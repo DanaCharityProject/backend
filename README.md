@@ -1,5 +1,7 @@
 # Dana Backend
 
+[![Build Status](https://travis-ci.org/DanaCharityProject/backend.svg?branch=AndreiAndMarco)](https://travis-ci.org/DanaCharityProject/backend)
+
 ## Setup
 
 ```bash
