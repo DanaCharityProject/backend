@@ -58,13 +58,12 @@ def post_communityresource_register(body):
     email = body["email"]
     phone_number = body["phone_number"]
 
-    geolocator = Nominatim()
     try:
-        _, (lat, lon) = geolocator.geocode(address)
+        (lon, lat) = __get_coordinates_from_address(address)
     except expression as identifier:
         return NoContent, 500
 
-    resource = CommunityResource(charity_number=charity_number, name=name, lat=lat, lon=lon,
+    resource = CommunityResource(charity_number=charity_number, name=name, y=lat, x=lon,
                                  contact_name=contact_name, email=email,
                                  phone_number=phone_number, verified=True) #edited just here for now)
     resource = CommunityResource.add_community_resource(resource)
@@ -80,7 +79,7 @@ def put_community_resource_edit(body):
     #geolocator = Nominatim() # will copy over from master branch
     try:
         #_, (lat, lon) = geolocator.geocode(body["address"])
-        _, (lat, lon) = find_location(body["address"])
+        (lon, lat) = __get_coordinates_from_address(body["address"])
     except expression as identifier:
         return NoContent, 500
 
@@ -93,11 +92,11 @@ def put_community_resource_edit(body):
     return NoContent, 200
 
 
-def find_location(body_address):
-
+def __get_coordinates_from_address(body_address):
     geolocator = Nominatim()
+    location = geolocator.geocode(body_address)
     try:
-        return geolocator.geocode(body_address)
+        return (location.longitude, location.latitude)  #x, y
     except expression as identifier:
         return NoContent, 500
 

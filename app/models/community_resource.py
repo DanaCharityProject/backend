@@ -9,8 +9,8 @@ class CommunityResource(db.Model):
     charity_number = db.Column(db.Integer, unique=True,
                        nullable=False, index=True)
     name = db.Column(db.String(64), nullable=False)
-    lat = db.Column(db.Float, nullable=False)
-    lon = db.Column(db.Float, nullable=False)
+    y = db.Column(db.Float, nullable=False)
+    x = db.Column(db.Float, nullable=False)
     contact_name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(64), nullable=False)
     phone_number = db.Column(db.String(32), nullable=False)
@@ -18,15 +18,15 @@ class CommunityResource(db.Model):
 
     @property
     def location(self):
-        return self.lat, self.lon
+        return self.y, self.x
 
     def to_dict(self):
         return {
             "id": self.id,
             "charity_number": self.charity_number,
             "name": self.name,
-            "lat": self.lat,
-            "lon": self.lon,
+            "y": self.y,
+            "x": self.x,
             "contact_name": self.contact_name,
             "email": self.email,
             "phone_number": self.phone_number,
@@ -50,7 +50,7 @@ class CommunityResource(db.Model):
 class CommunityResourceManager():
 
     @staticmethod
-    def edit_community_resource(charity_number, new_name, new_lat, new_lon, new_contact_name, new_email, new_phone_number):
+    def edit_community_resource(charity_number, new_name, new_y, new_x, new_contact_name, new_email, new_phone_number):
         resource = CommunityResource.get_resource_by_charity_number(charity_number)
 
         try:
@@ -63,8 +63,8 @@ class CommunityResourceManager():
             if not is_valid_community_resource_name(new_name):
                 raise InvalidCommunityResourceInfo("New resource center name cannot be empty")
             resource.name = new_name
-            resource.lat = new_lat
-            resource.lon = new_lon
+            resource.y = new_y
+            resource.x = new_x
             resource.contact_name = new_contact_name
             resource.email = new_email
             resource.phone_number = new_phone_number

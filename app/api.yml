@@ -193,9 +193,9 @@ paths:
                 type: integer
               name:
                 type: string
-              lat:
+              y:
                 type: number
-              lon:
+              x:
                 type: number
               contact_name:
                 type: string
