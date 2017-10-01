@@ -235,7 +235,7 @@ def test_put_user_info(client):
 
 
 '''
-"number":"1001"
+"charity_number":"1001"
 "name":"A mission"
 "address":"1 St. Clair Ave"
 "contact_name":"Leslie Woods"
@@ -243,7 +243,7 @@ def test_put_user_info(client):
 "phone_number":"4167890123"
 '''
 def test_put_community_resource_info(client):
-    number = "1000"
+    charity_number = "1000"
     email = "foo123@mail.com"
     phone_number = "4161234567"
     name = "The Mission"
@@ -252,7 +252,7 @@ def test_put_community_resource_info(client):
 
     # I changed the put handler in api.py a bit- now I send in the verified=True value
     rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -264,7 +264,7 @@ def test_put_community_resource_info(client):
         # our email-validator needs to be improved 
     new_email_valid = "foo123@mail"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -279,7 +279,7 @@ def test_put_community_resource_info(client):
     new_contact_name_valid = "Jane Doe"
     new_address_valid = "2 Bloor Ave"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": new_name_valid,
         "address": new_address_valid,
         "contact_name": new_contact_name_valid,
@@ -290,9 +290,9 @@ def test_put_community_resource_info(client):
 
     ## The invalid cases-
 
-    new_number_invalid = "2000"
+    new_charity_number_invalid = "2000"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": new_number_invalid,
+        "charity_number": new_charity_number_invalid,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -303,7 +303,7 @@ def test_put_community_resource_info(client):
 
     new_name_invalid = ""
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": new_name_invalid,
         "address": address,
         "contact_name": contact_name,
@@ -314,7 +314,7 @@ def test_put_community_resource_info(client):
 
     new_address_invalid = "xxxxxx"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": new_address_invalid,
         "contact_name": contact_name,
@@ -326,7 +326,7 @@ def test_put_community_resource_info(client):
 
     new_contact_name_invalid = "Jane ###"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": new_contact_name_invalid,
@@ -338,7 +338,7 @@ def test_put_community_resource_info(client):
 
     new_email_invalid = "mail"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -350,7 +350,7 @@ def test_put_community_resource_info(client):
 
     new_phone_number_invalid = "4161"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -362,7 +362,7 @@ def test_put_community_resource_info(client):
 '''
 def test_post_community_resource_info(client):
 
-    number = "0000"
+    charity_number = "0000"
     email = "foo123@mail.com"
     phone_number = "4161234567"
     name = "Food Bank 1"
@@ -371,7 +371,7 @@ def test_post_community_resource_info(client):
 
     # I changed the put handler in api.py a bit- now I send in the verified=True value
     rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "number": number,
+        "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
@@ -380,9 +380,9 @@ def test_post_community_resource_info(client):
     }))
     assert rv.status_code == 200
 
-    # repeat number
+    # repeat charity_number
     rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "number": "0000",
+        "charity_number": "0000",
         "name": "Food bank 3",
         "address": "2 Bloor ave",
         "contact_name": "Jane Doe",
@@ -393,7 +393,7 @@ def test_post_community_resource_info(client):
 
     # invalid email-
     rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "number": "2000",
+        "charity_number": "2000",
         "name": "Food bank 4",
         "address": "2 Bloor ave",
         "contact_name": "Jane Doe",
@@ -406,7 +406,7 @@ def test_post_community_resource_info(client):
     # bad phone number length
 '''
     rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "number": "3000",
+        "charity_number": "3000",
         "name": "Food bank 3",
         "address": "2 Bloor ave",
         "contact_name": "Jane Doe",

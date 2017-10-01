@@ -6,7 +6,7 @@ class CommunityResource(db.Model):
     __tablename__ = "community resources"
 
     id = db.Column(db.Integer, primary_key=True)
-    number = db.Column(db.Integer, unique=True,
+    charity_number = db.Column(db.Integer, unique=True,
                        nullable=False, index=True)
     name = db.Column(db.String(64), nullable=False)
     lat = db.Column(db.Float, nullable=False)
@@ -23,7 +23,7 @@ class CommunityResource(db.Model):
     def to_dict(self):
         return {
             "id": self.id,
-            "number": self.number,
+            "charity_number": self.charity_number,
             "name": self.name,
             "lat": self.lat,
             "lon": self.lon,
@@ -34,12 +34,12 @@ class CommunityResource(db.Model):
         }
 
     @staticmethod
-    def get_resource_by_number(number):
-        return CommunityResource.query.filter_by(number=number).first()
+    def get_resource_by_charity_number(charity_number):
+        return CommunityResource.query.filter_by(charity_number=charity_number).first()
 
     @staticmethod
     def add_community_resource(resource):
-        if CommunityResource.get_resource_by_number(resource.number) is not None:
+        if CommunityResource.get_resource_by_charity_number(resource.charity_number) is not None:
             return None
 
         db.session.add(resource)
@@ -50,8 +50,8 @@ class CommunityResource(db.Model):
 class CommunityResourceManager():
 
     @staticmethod
-    def edit_community_resource(number, new_name, new_lat, new_lon, new_contact_name, new_email, new_phone_number):
-        resource = CommunityResource.get_resource_by_number(number)
+    def edit_community_resource(charity_number, new_name, new_lat, new_lon, new_contact_name, new_email, new_phone_number):
+        resource = CommunityResource.get_resource_by_charity_number(charity_number)
 
         try:
             if resource is None:

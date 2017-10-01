@@ -51,7 +51,7 @@ def post_user(body):
 # todo: make decorators for validation checks
 # todo: fix imminent mistakes in api.yml file
 def post_communityresource_register(body):
-    number = int(body["number"])
+    charity_number = int(body["charity_number"])
     name = body["name"]
     address = body["address"]
     contact_name = body["contact_name"]
@@ -64,7 +64,7 @@ def post_communityresource_register(body):
     except expression as identifier:
         return NoContent, 500
 
-    resource = CommunityResource(number=number, name=name, lat=lat, lon=lon,
+    resource = CommunityResource(charity_number=charity_number, name=name, lat=lat, lon=lon,
                                  contact_name=contact_name, email=email,
                                  phone_number=phone_number, verified=True) #edited just here for now)
     resource = CommunityResource.add_community_resource(resource)
@@ -85,7 +85,7 @@ def put_community_resource_edit(body):
         return NoContent, 500
 
     try:
-        CommunityResourceManager.edit_community_resource(int(body["number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"]) 
+        CommunityResourceManager.edit_community_resource(int(body["charity_number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"]) 
     except NoExistingCommunityResource:
         return NoContent, 500
     except InvalidCommunityResourceInfo:

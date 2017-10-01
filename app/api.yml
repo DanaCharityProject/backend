@@ -189,7 +189,7 @@ paths:
             properties:
               id:
                 type: integer
-              number:
+              charity_number:
                 type: integer
               name:
                 type: string
@@ -223,7 +223,7 @@ paths:
           schema:
             type: object
             properties:
-              number:
+              charity_number:
                 type: string
                 description: |
                   The number must exist in the system.
