@@ -14,6 +14,9 @@ class CommunityResource(db.Model):
     contact_name = db.Column(db.String(64), nullable=False)
     email = db.Column(db.String(64), nullable=False)
     phone_number = db.Column(db.String(32), nullable=False)
+    address = db.Column(db.String(64), nullable=False)
+    website = db.Column(db.String(64), nullable=True)
+    image_uri = db.Column(db.String(64), nullable=True)
     verified = db.Column(db.Boolean, nullable=False)
 
     @property
@@ -30,6 +33,8 @@ class CommunityResource(db.Model):
             "contact_name": self.contact_name,
             "email": self.email,
             "phone_number": self.phone_number,
+            "website": self.website,
+            "image_uri": self.image_uri,
             "verified": self.verified
         }
 
@@ -49,8 +54,9 @@ class CommunityResource(db.Model):
 
 class CommunityResourceManager():
 
+    # TODO: check if address, website and image_uri are valid
     @staticmethod
-    def edit_community_resource(charity_number, new_name, new_y, new_x, new_contact_name, new_email, new_phone_number):
+    def edit_community_resource(charity_number, new_name, new_y, new_x, new_contact_name, new_email, new_phone_number, new_address, new_website, new_image_uri):
         resource = CommunityResource.get_resource_by_charity_number(charity_number)
 
         try:
@@ -68,6 +74,9 @@ class CommunityResourceManager():
             resource.contact_name = new_contact_name
             resource.email = new_email
             resource.phone_number = new_phone_number
+            resource.address = new_address
+            resource.website = new_website
+            resource.image_uri = new_image_uri
         except NoExistingCommunityResource:
             raise
         except InvalidCommunityResourceInfo:

@@ -252,6 +252,18 @@ paths:
                   of length 10. It has to start with 414 or 905
                   or 647 since we are currently focused on 
                   community resource centers in Toronto.
+              address:
+                type: string
+                description: |
+                  Must have proper address format.
+              website:
+                type: string
+                description: |
+                  Must have proper url format.
+              image_uri:
+                type: string
+                description: |
+                  Must have proper url format.
       responses:
         200:
           description: Community resource edited

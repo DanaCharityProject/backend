@@ -57,6 +57,8 @@ def post_communityresource_register(body):
     contact_name = body["contact_name"]
     email = body["email"]
     phone_number = body["phone_number"]
+    website = body["website"]
+    image_uri = body["image_uri"]
 
     try:
         (lon, lat) = __get_coordinates_from_address(address)
@@ -65,7 +67,9 @@ def post_communityresource_register(body):
 
     resource = CommunityResource(charity_number=charity_number, name=name, y=lat, x=lon,
                                  contact_name=contact_name, email=email,
-                                 phone_number=phone_number, verified=True) #edited just here for now)
+                                 phone_number=phone_number, address=address,
+                                 website=website, image_uri=image_uri,
+                                 verified=True) #edited just here for now)
     resource = CommunityResource.add_community_resource(resource)
 
     if resource is None:
@@ -84,7 +88,7 @@ def put_community_resource_edit(body):
         return NoContent, 500
 
     try:
-        CommunityResourceManager.edit_community_resource(int(body["charity_number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"]) 
+        CommunityResourceManager.edit_community_resource(int(body["charity_number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"], body["address"], body["website"], body["image_uri"])
     except NoExistingCommunityResource:
         return NoContent, 500
     except InvalidCommunityResourceInfo:

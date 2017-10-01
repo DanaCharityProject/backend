@@ -233,7 +233,7 @@ def test_put_user_info(client):
 
     # TODO: User does not exist
 
-
+# TODO: cases for invalid website and image_uri
 '''
 "charity_number":"1001"
 "name":"A mission"
@@ -241,6 +241,8 @@ def test_put_user_info(client):
 "contact_name":"Leslie Woods"
 "email":"email"
 "phone_number":"4167890123"
+"website":"www.amission.com"
+"image_uri":"http://www.amission.com/image.png"
 '''
 def test_put_community_resource_info(client):
     charity_number = "1000"
@@ -249,6 +251,8 @@ def test_put_community_resource_info(client):
     name = "The Mission"
     contact_name = "John Smith"
     address = "1 Yonge Street"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
 
     # I changed the put handler in api.py a bit- now I send in the verified=True value
     rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
@@ -257,7 +261,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": phone_number 
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     }))
     assert rv.status_code == 200
     
@@ -269,7 +275,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": new_email_valid,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     }))  
     assert rv.status_code == 200
 
@@ -284,7 +292,9 @@ def test_put_community_resource_info(client):
         "address": new_address_valid,
         "contact_name": new_contact_name_valid,
         "email": new_email_valid,
-        "phone_number": new_phone_number_valid
+        "phone_number": new_phone_number_valid,
+        "website": website,
+        "image_uri": image_uri
     }))  
     assert rv.status_code == 200
 
@@ -297,7 +307,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     })) 
     assert rv.status_code == 500  # working
 
@@ -308,7 +320,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     })) 
 
 
@@ -319,7 +333,9 @@ def test_put_community_resource_info(client):
         "address": new_address_invalid,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     })) 
     assert 500 == 500 # will fail -- need to look at why
 
@@ -331,7 +347,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": new_contact_name_invalid,
         "email": email,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     })) 
     assert 500 == 500  # check with team about this
 
@@ -343,7 +361,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": new_email_invalid,
-        "phone_number": phone_number
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
     })) 
     assert rv.status_code == 400 # this will throw 400 error because of swagger specification in api.yml file
 
@@ -355,7 +375,9 @@ def test_put_community_resource_info(client):
         "address": address,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": new_phone_number_invalid
+        "phone_number": new_phone_number_invalid,
+        "website": website,
+        "image_uri": image_uri
     })) 
     assert rv.status_code == 500 # working
 
