@@ -33,6 +33,7 @@ class CommunityResource(db.Model):
             "contact_name": self.contact_name,
             "email": self.email,
             "phone_number": self.phone_number,
+            "address": self.address,
             "website": self.website,
             "image_uri": self.image_uri,
             "verified": self.verified

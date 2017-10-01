@@ -206,6 +206,23 @@ paths:
               verified:
                 type: boolean
   "/communityresource/info":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_communityresource_info
+      summary: Returns a JSON object containing community resource info.
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              charity_number:
+                type: string
+                description: |
+                  The number must exist in the system.
+      responses:
+        200:
+          description: Community resource JSON returned
     put:
       tags: [communityresource]
       operationId: app.api.put_community_resource_edit

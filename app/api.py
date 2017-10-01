@@ -1,3 +1,5 @@
+import json
+
 from flask import g
 from connexion import NoContent
 from geopy.geocoders import Nominatim
@@ -24,6 +26,23 @@ def get_user():
 @auth.login_required
 def get_user_token():
     return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
+
+
+def get_communityresource_info(body):
+    try:
+        com_resource = CommunityResource.get_resource_by_charity_number(charity_number=body["charity_number"])
+    except NoExistingCommunityResource:
+        return NoContent, 500
+
+    com_resource_dict = com_resource.to_dict()
+    return_dict = {
+        "name": com_resource_dict["name"],
+        "website": com_resource_dict["website"],
+        "address": com_resource_dict["address"],
+        "image_uri": com_resource_dict["image_uri"]
+    }
+
+    return json.dumps(return_dict, sort_keys=True), 200
 
 
 #   ---------

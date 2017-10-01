@@ -233,6 +233,41 @@ def test_put_user_info(client):
 
     # TODO: User does not exist
 
+# TODO: modify check to work with json instead of string
+# get_data(as_text=True) interferes with json staying in good form
+def test_get_community_resource_info(client):
+    charity_number = "1000"
+    email = "foo123@mail.com"
+    phone_number = "4161234567"
+    name = "The Mission"
+    contact_name = "John Smith"
+    address = "1 Yonge Street"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+    
+    assert rv.status_code == 200
+
+    rv = client.get("/communityresource/info", headers=get_headers(), data=json.dumps({
+        "charity_number": charity_number
+    }))
+    
+    body = json.loads(rv.get_data(as_text=True))
+
+    assert rv.status_code == 200
+    assert body == "{\"address\": \"" + address + "\", \"image_uri\": \"" + image_uri + "\", \"name\": \"" + name + "\", \"website\": \"" + website + "\"}"
+
+
 # TODO: cases for invalid website and image_uri
 '''
 "charity_number":"1001"
