@@ -1,0 +1,13 @@
+sudo: required
+
+language: python
+
+services:
+  - docker
+
+before_install:
+  - docker-compose build
+  - docker-compose up -d db
+
+script:
+  - docker-compose run app python -m pytest
