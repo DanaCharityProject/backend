@@ -96,15 +96,6 @@ def put_community_resource_edit(body):
     return NoContent, 200
 
 
-def __get_coordinates_from_address(body_address):
-    geolocator = Nominatim()
-    location = geolocator.geocode(body_address)
-    try:
-        return (location.longitude, location.latitude)  #x, y
-    except expression as identifier:
-        return NoContent, 500
-
-
 @auth.login_required
 def put_user_password(body):
     g.current_user.password = body["password"]
@@ -123,4 +114,11 @@ def put_user_info(body):
         return NoContent, 500
     return NoContent, 200
 
-    
+
+def __get_coordinates_from_address(body_address):
+    geolocator = Nominatim()
+    location = geolocator.geocode(body_address)
+    try:
+        return (location.longitude, location.latitude)  #x, y
+    except expression as identifier:
+        return NoContent, 500
