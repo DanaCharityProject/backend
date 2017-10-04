@@ -157,7 +157,7 @@ paths:
                 type: string
       security:
         - basic: []
-  /communityresource/register:
+  /communityresource:
     post:
       tags: [communityresource]
       operationId: app.api.post_communityresource_register
@@ -189,13 +189,13 @@ paths:
             properties:
               id:
                 type: integer
-              number:
+              charity_number:
                 type: integer
               name:
                 type: string
-              lat:
+              y:
                 type: number
-              lon:
+              x:
                 type: number
               contact_name:
                 type: string
@@ -205,6 +205,85 @@ paths:
                 type: string
               verified:
                 type: boolean
+  "/communityresource/info":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_communityresource_info
+      summary: Returns a JSON object containing community resource info.
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              charity_number:
+                type: string
+                description: |
+                  The number must exist in the system.
+      responses:
+        200:
+          description: Community resource JSON returned
+    put:
+      tags: [communityresource]
+      operationId: app.api.put_community_resource_edit
+      summary: Edit an existing community resource
+      description: |
+        The community resource endpoint allows a user to edit an existing community resource. Currently the Backend method takes in all the community resource field values at once.
+      parameters:
+        - name: body
+          in: body
+          description: |
+            The parameters for this function are- the number(id) of
+            a community resource, the organization name, the address,
+            the contact person's name, contact email address and the
+            phone number of the contact person.
+          schema:
+            type: object
+            properties:
+              charity_number:
+                type: string
+                description: |
+                  The number must exist in the system.
+              name:
+                type: string
+                description: |
+                  Name of the organization cannot be empty string.
+              address:
+                type: string
+                description: |
+                  The address of the community resource must exist.
+              contact_name:
+                type: string
+                description: |
+                  The name of a person cannot have non-alphabet
+                  characters.
+              email:
+                type: string
+                format: email
+                description: |
+                  Must have a proper email format - <name>@<domain>.<domain-suffix>
+              phone_number:
+                type: string
+                description: |
+                  The phone number has to be purely numeric and
+                  of length 10. It has to start with 414 or 905
+                  or 647 since we are currently focused on 
+                  community resource centers in Toronto.
+              address:
+                type: string
+                description: |
+                  Must have proper address format.
+              website:
+                type: string
+                description: |
+                  Must have proper url format.
+              image_uri:
+                type: string
+                description: |
+                  Must have proper url format.
+      responses:
+        200:
+          description: Community resource edited
       security:
         - basic: []
 

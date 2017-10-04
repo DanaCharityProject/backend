@@ -35,3 +35,22 @@ def test_is_valid_username():
     assert not validators.is_valid_username("&#JLDS*(7/")
     # Not string
     assert not validators.is_valid_username(1)
+
+
+def test_is_valid_phone_number():
+    # Good example
+    assert validators.is_valid_phone_number("6475556666")
+    # Good example
+    assert validators.is_valid_phone_number("4165556666")
+    # Good example
+    assert validators.is_valid_phone_number("9055556666")
+    # Too short
+    assert not validators.is_valid_phone_number("416111")
+    # Too long
+    assert not validators.is_valid_phone_number("41611100000")
+    # Invalid area code
+    assert not validators.is_valid_phone_number("1234567890")
+    # Not string
+    assert not validators.is_valid_phone_number(1)
+
+
