@@ -45,6 +45,10 @@ def get_communityresource_info(body):
     return json.dumps(return_dict, sort_keys=True), 200
 
 
+def get_nearby_communityresource(body):
+    return None
+
+
 #   ---------
 
 

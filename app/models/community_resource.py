@@ -1,5 +1,6 @@
 from .. import db
 from ..validators import is_valid_username, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
+from geopy.distance import vincenty
 
 
 class CommunityResource(db.Model):
@@ -52,6 +53,12 @@ class CommunityResource(db.Model):
         db.session.commit()
         return resource
 
+    # TODO: return a list of resources and their id & location within a given radius of
+    # latitude, longitude
+    @staticmethod
+    def get_all_resources(latitude, longitude, radius):
+        
+        return None
 
 class CommunityResourceManager():
 
