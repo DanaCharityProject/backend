@@ -53,12 +53,17 @@ class CommunityResource(db.Model):
         db.session.commit()
         return resource
 
-    # TODO: return a list of resources and their id & location within a given radius of
-    # latitude, longitude
+    # Returns a list of resources within a given radius of latitude, longitude
     @staticmethod
-    def get_all_resources(latitude, longitude, radius):
-        
-        return None
+    def get_resources_by_radius(latitude, longitude, radius):
+        res = CommunityResource.query().all()
+
+        for c in res:
+            if vincenty((c.x, c.y), (latitude, longitude)) > radius:
+                res.remove(c)
+
+        return res
+
 
 class CommunityResourceManager():
 
