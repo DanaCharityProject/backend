@@ -46,7 +46,16 @@ def get_communityresource_info(body):
 
 
 def get_nearby_communityresource(body):
-    return None
+    lon, lat, rad = body["x"], body["y"], body["radius"]
+
+    resource_list = CommunityResource.get_resources_by_radius(lon, lat, rad)
+    res_info_list = []
+
+    for r in resource_list:
+        r_dict = r.to_dict()
+        res_info_list.append([r_dict["id"], r_dict["charity_number"], r_dict["name"], r_dict["x"], r_dict["y"]])
+
+    return json.dumps(res_info_list, sort_keys=True), 200
 
 
 #   ---------

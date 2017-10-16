@@ -55,11 +55,11 @@ class CommunityResource(db.Model):
 
     # Returns a list of resources within a given radius of latitude, longitude
     @staticmethod
-    def get_resources_by_radius(latitude, longitude, radius):
-        res = CommunityResource.query().all()
+    def get_resources_by_radius(longitude, latitude, radius):
+        res = CommunityResource.query.all()
 
         for c in res:
-            if vincenty((c.x, c.y), (latitude, longitude)) > radius:
+            if vincenty((c.x, c.y), (longitude, latitude)).kilometers > radius:
                 res.remove(c)
 
         return res

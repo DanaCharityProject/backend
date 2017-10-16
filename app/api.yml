@@ -286,7 +286,26 @@ paths:
           description: Community resource edited
       security:
         - basic: []
-
+  "/communityresource/radius":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_nearby_communityresource
+      summary: Returns a JSON object containing a list of community resources within given radius.
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              x:
+                type: number
+              y:
+                type: number
+              radius:
+                type: number
+      responses:
+        200:
+          description: Nearby community resource list JSON returned
 securityDefinitions:
   basic:
     type: basic
