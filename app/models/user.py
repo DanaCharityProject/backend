@@ -70,24 +70,15 @@ class UserManager():
     def edit_user(user_id, new_username):
         user = User.query.get(user_id)
         try:
-            if user is None:
-                raise NoExistingUser("Something went wrong!")
             if not is_valid_username(new_username):
                 raise InvalidUserInfo("User information is invalid.")
             user.username = new_username
-        except NoExistingUser:
-            raise
         except InvalidUserInfo:
             raise
 
     @staticmethod
     def change_password(user, password):
         user.password = password
-
-
-class NoExistingUser(Exception):
-    def __init__(self, message):
-        Exception.__init__(self, message)
 
 
 class InvalidUserInfo(Exception):

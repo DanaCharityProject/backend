@@ -5,8 +5,8 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models.user import User, UserManager, NoExistingUser, InvalidUserInfo
-from .models.community_resource import CommunityResource, CommunityResourceManager, NoExistingCommunityResource, InvalidCommunityResourceInfo
+from .models.user import User, UserManager, InvalidUserInfo
+from .models.community_resource import CommunityResource, NoExistingCommunityResource, CommunityResourceManager, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 
 
@@ -139,8 +139,6 @@ def put_user_info(body):
     user = g.current_user
     try:
         UserManager.edit_user(user.to_dict()["id"], body["username"])
-    except NoExistingUser:
-        return NoContent, 500
     except InvalidUserInfo:
         return NoContent, 500
     return NoContent, 200
