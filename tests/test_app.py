@@ -344,7 +344,7 @@ def test_get_nearby_communityresource(client):
         "x": x, 
         "y": y,
         "radius": radius
-    }))
+    }, ensure_ascii=False))  ## may need to change
 
     body = json.loads(rv.get_data(as_text=True))
 
@@ -385,7 +385,15 @@ def test_put_community_resource_info(client):
         "image_uri": image_uri
     }))
     assert rv.status_code == 200
+    rv = client.get("/communityresource/info", headers=get_headers(), data=json.dumps({
+        "charity_number": charity_number
+    }))
     
+    body = json.loads(rv.get_data(as_text=True))
+
+    assert rv.status_code == 200
+    #assert body == "{\"address\": \"" + address + "\", \"image_uri\": \"" + image_uri + "\", \"name\": \"" + name + "\", \"website\": \"" + website + "\"}"
+   
         # our email-validator needs to be improved 
     new_email_valid = "foo123@mail"
     rv = client.put("/communityresource/info", headers=get_headers(), data=json.dumps({

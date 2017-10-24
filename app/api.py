@@ -112,7 +112,6 @@ def post_communityresource_register(body):
 
 def put_community_resource_edit(body):
 
-    #geolocator = Nominatim() # will copy over from master branch
     try:
         #_, (lat, lon) = geolocator.geocode(body["address"])
         (lon, lat) = __get_coordinates_from_address(body["address"])

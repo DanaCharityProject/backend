@@ -95,6 +95,14 @@ class CommunityResourceManager():
         except InvalidCommunityResourceInfo:
             raise
 
+        #session.query(Stuff).update({Stuff.foo: Stuff.foo + 1})
+        #session.commit()
+
+        #db.session.add(resource)
+        #db.session.update(resource)
+        db.session.commit()  ##TODO: ask opinion
+        #return resource
+
 
 class NoExistingCommunityResource(Exception):
     def __init__(self, message):
