@@ -5,8 +5,8 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth
-from .models.user import User, UserManager, NoExistingUser, InvalidUserInfo
-from .models.community_resource import CommunityResource, CommunityResourceManager, NoExistingCommunityResource, InvalidCommunityResourceInfo
+from .models.user import User, UserManager, InvalidUserInfo
+from .models.community_resource import CommunityResource, NoExistingCommunityResource, CommunityResourceManager, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 
 
@@ -43,6 +43,19 @@ def get_communityresource_info(body):
     }
 
     return json.dumps(return_dict, sort_keys=True), 200
+
+
+def get_nearby_communityresource(body):
+    lon, lat, rad = body["x"], body["y"], body["radius"]
+
+    resource_list = CommunityResource.get_resources_by_radius(lon, lat, rad)
+    res_info_list = []
+
+    for r in resource_list:
+        r_dict = r.to_dict()
+        res_info_list.append([r_dict["id"], r_dict["charity_number"], r_dict["name"], r_dict["x"], r_dict["y"]])
+
+    return json.dumps(res_info_list, sort_keys=True), 200
 
 
 #   ---------
@@ -99,7 +112,6 @@ def post_communityresource_register(body):
 
 def put_community_resource_edit(body):
 
-    #geolocator = Nominatim() # will copy over from master branch
     try:
         #_, (lat, lon) = geolocator.geocode(body["address"])
         (lon, lat) = __get_coordinates_from_address(body["address"])
@@ -126,8 +138,6 @@ def put_user_info(body):
     user = g.current_user
     try:
         UserManager.edit_user(user.to_dict()["id"], body["username"])
-    except NoExistingUser:
-        return NoContent, 500
     except InvalidUserInfo:
         return NoContent, 500
     return NoContent, 200

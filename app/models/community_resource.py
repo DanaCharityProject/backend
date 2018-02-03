@@ -1,5 +1,6 @@
 from .. import db
 from ..validators import is_valid_username, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
+from geopy.distance import vincenty
 
 
 class CommunityResource(db.Model):
@@ -52,6 +53,17 @@ class CommunityResource(db.Model):
         db.session.commit()
         return resource
 
+    # Returns a list of resources within a given radius of latitude, longitude
+    @staticmethod
+    def get_resources_by_radius(longitude, latitude, radius):
+        res = CommunityResource.query.all()
+
+        for c in res:
+            if vincenty((c.x, c.y), (longitude, latitude)).kilometers > radius:
+                res.remove(c)
+
+        return res
+
 
 class CommunityResourceManager():
 
@@ -82,6 +94,14 @@ class CommunityResourceManager():
             raise
         except InvalidCommunityResourceInfo:
             raise
+
+        #session.query(Stuff).update({Stuff.foo: Stuff.foo + 1})
+        #session.commit()
+
+        #db.session.add(resource)
+        #db.session.update(resource)
+        db.session.commit()  ##TODO: ask opinion
+        #return resource
 
 
 class NoExistingCommunityResource(Exception):
