@@ -34,7 +34,7 @@ def get_communityresource_info(body):
         "image_uri": com_resource_dict["image_uri"]
     }
 
-    return json.dumps(return_dict, sort_keys=True), 200
+    return return_dict, 200
 
 
 def get_nearby_communityresource(body):
@@ -44,10 +44,9 @@ def get_nearby_communityresource(body):
     res_info_list = []
 
     for r in resource_list:
-        r_dict = r.to_dict()
-        res_info_list.append([r_dict["id"], r_dict["charity_number"], r_dict["name"], r_dict["x"], r_dict["y"]])
+        res_info_list.append(r.to_dict())
 
-    return json.dumps(res_info_list, sort_keys=True), 200
+    return res_info_list, 200
 
 
 #   ---------
@@ -78,19 +77,20 @@ def post_communityresource_register(body):
     try:
         (lon, lat) = __get_coordinates_from_address(address)
     except:
-        return NoContent, 500
+        return NoContent, 404
 
     resource = CommunityResource(charity_number=charity_number, name=name, y=lat, x=lon,
                                  contact_name=contact_name, email=email,
                                  phone_number=phone_number, address=address,
                                  website=website, image_uri=image_uri,
                                  verified=True) #edited just here for now)
+    
     resource = CommunityResource.add_community_resource(resource)
 
     if resource is None:
-        return NoContent, 500
+        return NoContent, 409
 
-    return resource.to_dict(), 200
+    return NoContent, 201
 
 
 def put_community_resource_edit(body):
@@ -99,14 +99,14 @@ def put_community_resource_edit(body):
         #_, (lat, lon) = geolocator.geocode(body["address"])
         (lon, lat) = __get_coordinates_from_address(body["address"])
     except:
-        return NoContent, 500
+        return NoContent, 404
 
     try:
         CommunityResourceManager.edit_community_resource(int(body["charity_number"]), body["name"], lat, lon, body["contact_name"], body["email"], body["phone_number"], body["address"], body["website"], body["image_uri"])
     except NoExistingCommunityResource:
-        return NoContent, 500
+        return NoContent, 404
     except InvalidCommunityResourceInfo:
-        return NoContent, 500
+        return NoContent, 400
     return NoContent, 200
 
 

@@ -51,6 +51,7 @@ class CommunityResource(db.Model):
 
         db.session.add(resource)
         db.session.commit()
+
         return resource
 
     # Returns a list of resources within a given radius of latitude, longitude
@@ -72,28 +73,25 @@ class CommunityResourceManager():
     def edit_community_resource(charity_number, new_name, new_y, new_x, new_contact_name, new_email, new_phone_number, new_address, new_website, new_image_uri):
         resource = CommunityResource.get_resource_by_charity_number(charity_number)
 
-        try:
-            if resource is None:
-                raise NoExistingCommunityResource("Community Resource does not exist.")
-            if not is_valid_email(new_email):
-                raise InvalidCommunityResourceInfo("New email address for Community Resource is invalid.")
-            if not is_valid_phone_number(new_phone_number):
-                raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")
-            if not is_valid_community_resource_name(new_name):
-                raise InvalidCommunityResourceInfo("New resource center name cannot be empty")
-            resource.name = new_name
-            resource.y = new_y
-            resource.x = new_x
-            resource.contact_name = new_contact_name
-            resource.email = new_email
-            resource.phone_number = new_phone_number
-            resource.address = new_address
-            resource.website = new_website
-            resource.image_uri = new_image_uri
-        except NoExistingCommunityResource:
-            raise
-        except InvalidCommunityResourceInfo:
-            raise
+        if resource is None:
+            raise NoExistingCommunityResource("Community Resource does not exist.")
+
+        if not is_valid_email(new_email):
+            raise InvalidCommunityResourceInfo("New email address for Community Resource is invalid.")
+        if not is_valid_phone_number(new_phone_number):
+            raise InvalidCommunityResourceInfo("New phone number for Community Resource is invalid.")
+        if not is_valid_community_resource_name(new_name):
+            raise InvalidCommunityResourceInfo("New resource center name cannot be empty")
+
+        resource.name = new_name
+        resource.y = new_y
+        resource.x = new_x
+        resource.contact_name = new_contact_name
+        resource.email = new_email
+        resource.phone_number = new_phone_number
+        resource.address = new_address
+        resource.website = new_website
+        resource.image_uri = new_image_uri
 
         #session.query(Stuff).update({Stuff.foo: Stuff.foo + 1})
         #session.commit()
