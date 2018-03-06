@@ -46,47 +46,6 @@ def get_headers(basic_auth=None):
     return headers
 
 
-def test_get_greeting(client):
-    username = "foo"
-    password = "bar"
-
-    user = models.user.User(username=username)
-    user.password = password
-
-    db.session.add(user)
-    db.session.commit()
-
-    # get greeting with username
-    rv = client.get(
-        "/greeting", headers=get_headers(basic_auth=username + ":" + password))
-
-    body = json.loads(rv.get_data(as_text=True))
-
-    assert rv.status_code == 200
-    assert body["greeting"] == "Hello {}.".format(username)
-
-
-def test_post_greeting(client):
-    username = "foo"
-    password = "bar"
-
-    user = models.user.User(username=username)
-    user.password = password
-
-    db.session.add(user)
-    db.session.commit()
-
-    # custom greeting
-    rv = client.post("/greeting", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
-        "name": "john"
-    }))
-
-    body = json.loads(rv.get_data(as_text=True))
-
-    assert rv.status_code == 200
-    assert body["greeting"] == "Hello john."
-
-
 def test_get_user(client):
     username = "foo"
     password = "bar"

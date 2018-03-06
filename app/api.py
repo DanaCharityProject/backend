@@ -11,14 +11,6 @@ from .validators import is_valid_password, is_valid_email, is_valid_phone_number
 
 
 @auth.login_required
-def get_greeting():
-
-    return {
-        "greeting": "Hello {}.".format(g.current_user.username)
-    }
-
-
-@auth.login_required
 def get_user():
     return g.current_user.to_dict()
 
@@ -46,15 +38,6 @@ def get_communityresource_info(body):
 
 
 #   ---------
-
-
-@auth.login_required
-def post_greeting(body):
-
-    return {
-        "greeting": "Hello {}.".format(body["name"])
-    }
-
 
 def post_user(body):
     user = User(username=body["username"])
