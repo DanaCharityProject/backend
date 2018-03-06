@@ -55,6 +55,8 @@ paths:
                 type: integer
               username:
                 type: string
+        409:
+          description: Conflict exists, username taken.
   "/user/password":
     put:
       tags: [user]
