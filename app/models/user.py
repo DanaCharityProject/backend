@@ -13,6 +13,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True,
                          nullable=False, index=True)
+    role = db.Column(db.String(64), default="user", nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     # email = db.Column(db.String(64), unique=True,
     #                    nullable=True, index=True)
@@ -30,29 +31,33 @@ class User(db.Model):
 
     def generate_auth_token(self, expiration=600):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
-        return s.dumps({'id': self.id})
+
+        return s.dumps({
+            "user_id": self.id,
+            "role": self.role
+        })
 
     @staticmethod
     def verify_auth_token(token):
-        s = Serializer(current_app.config['SECRET_KEY'])
-        try:
-            data = s.loads(token)
-        except SignatureExpired:
-            return None    # valid token, but expired
-        except BadSignature:
-            return None    # invalid token
-        user = User.query.get(data['id'])
-        return user
+        return UserManager.get_user_by_token(token)
 
     def to_dict(self):
         return {
             "id": self.id,
-            "username": self.username
+            "username": self.username,
+            "role": self.role
         }
 
     @staticmethod
     def get_user_by_username(username):
-        return User.query.filter_by(username=username).first()
+        return UserManager.get_user_by_username(username)
+
+    @staticmethod
+    def add_user(user):
+        return UserManager.add_user(user)
+
+
+class UserManager():
 
     @staticmethod
     def add_user(user):
@@ -62,9 +67,6 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
         return user
-
-
-class UserManager():
 
     @staticmethod
     def edit_user(user_id, new_username):
@@ -81,6 +83,24 @@ class UserManager():
             raise
 
     @staticmethod
+    def get_user_by_username(username):
+        return User.query.filter_by(username=username).first()
+
+    @staticmethod
+    def get_user_by_token(token):
+        s = Serializer(current_app.config['SECRET_KEY'])
+
+        try:
+            data = s.loads(token)
+            return User.query.get(data["user_id"])
+        except SignatureExpired:
+            return None    # valid token, but expired
+        except BadSignature:
+            return None    # invalid token
+        except:
+            return None
+
+    @staticmethod
     def change_password(user, password):
         user.password = password
 
@@ -93,4 +113,3 @@ class NoExistingUser(Exception):
 class InvalidUserInfo(Exception):
     def __init__(self, message):
         Exception.__init__(self, message)
-
