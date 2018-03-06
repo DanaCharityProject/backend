@@ -248,6 +248,57 @@ paths:
           description: Community resource edited
       security:
         - basic: []
+  "/communityresource/radius":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_nearby_communityresource
+      summary: Returns a JSON object containing a list of community resources within given radius.
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              x:
+                type: number
+                description: |
+                  The longitude on which the community resource is located
+              y:
+                type: number
+                description: |
+                  The latitude on which the community resource is located
+              radius:
+                type: number
+                description: |
+                  The distance in kilometers
+      responses:
+        200:
+          description: Nearby community resource list JSON returned
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                  description: |
+                    Unique code that represents a community resource in our system
+                charity_number:
+                  type: number
+                  description: |
+                    Number to represent the charity
+                name:
+                  type: string
+                  description: |
+                    Name of the organization
+                x:
+                  type: number
+                  description: |
+                    The longitude on which the community resource is located
+                y:
+                  type: number
+                  description: |
+                    The latitude on which the community resource is located
 
 securityDefinitions:
   basic:
