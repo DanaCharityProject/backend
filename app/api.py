@@ -4,7 +4,7 @@ from flask import g
 from connexion import NoContent
 from geopy.geocoders import Nominatim
 
-from .auth import auth
+from .auth import auth, get_current_user, get_current_role
 from .models.user import User, UserManager, NoExistingUser, InvalidUserInfo
 from .models.community_resource import CommunityResource, CommunityResourceManager, NoExistingCommunityResource, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
@@ -12,12 +12,12 @@ from .validators import is_valid_password, is_valid_email, is_valid_phone_number
 
 @auth.login_required
 def get_user():
-    return g.current_user.to_dict()
+    return get_current_user().to_dict()
 
 
 @auth.login_required
 def get_user_token():
-    return {"token": g.current_user.generate_auth_token().decode("ascii")}, 201
+    return {"token": get_current_user().generate_auth_token().decode("ascii")}, 201
 
 
 def get_communityresource_info(body):
