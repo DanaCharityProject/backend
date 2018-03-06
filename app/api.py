@@ -64,7 +64,7 @@ def post_communityresource_register(body):
 
     try:
         (lon, lat) = __get_coordinates_from_address(address)
-    except expression as identifier:
+    except:
         return NoContent, 500
 
     resource = CommunityResource(charity_number=charity_number, name=name, y=lat, x=lon,
@@ -86,7 +86,7 @@ def put_community_resource_edit(body):
     try:
         #_, (lat, lon) = geolocator.geocode(body["address"])
         (lon, lat) = __get_coordinates_from_address(body["address"])
-    except expression as identifier:
+    except:
         return NoContent, 500
 
     try:
@@ -121,5 +121,5 @@ def __get_coordinates_from_address(body_address):
     location = geolocator.geocode(body_address)
     try:
         return (location.longitude, location.latitude)  #x, y
-    except expression as identifier:
+    except:
         return NoContent, 500
