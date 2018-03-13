@@ -5,7 +5,7 @@ from connexion import NoContent
 from geopy.geocoders import Nominatim
 
 from .auth import auth, get_current_user, get_current_role
-from .models.user import User, UserManager, InvalidUserInfo
+from .models.user import User, UserManager, InvalidUserInfo, USER_ROLE_ADMIN, USER_ROLE_USER
 from .models.community_resource import CommunityResource, CommunityResourceManager, NoExistingCommunityResource, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 
@@ -64,7 +64,11 @@ def post_user(body):
 
 # todo: make decorators for validation checks
 # todo: fix imminent mistakes in api.yml file
+@auth.login_required
 def post_communityresource_register(body):
+    if get_current_role != USER_ROLE_ADMIN:
+        return NoContent, 403
+
     charity_number = int(body["charity_number"])
     name = body["name"]
     address = body["address"]
@@ -93,7 +97,10 @@ def post_communityresource_register(body):
     return NoContent, 201
 
 
+@auth.login_required
 def put_community_resource_edit(body):
+    if get_current_role != USER_ROLE_ADMIN:
+        return NoContent, 403
 
     try:
         #_, (lat, lon) = geolocator.geocode(body["address"])

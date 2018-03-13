@@ -6,6 +6,8 @@ from ..validators import is_valid_username
 
 from .. import db
 
+USER_ROLE_USER = "user"
+USER_ROLE_ADMIN = "admin"
 
 class User(db.Model):
     __tablename__ = "users"
@@ -13,7 +15,7 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), unique=True,
                          nullable=False, index=True)
-    role = db.Column(db.String(64), default="user", nullable=False)
+    role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     # email = db.Column(db.String(64), unique=True,
     #                    nullable=True, index=True)
