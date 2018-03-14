@@ -77,6 +77,7 @@ def post_communityresource_register(body):
     phone_number = body["phone_number"]
     website = body["website"]
     image_uri = body["image_uri"]
+    user_id = body["user_id"]
 
     try:
         (lon, lat) = __get_coordinates_from_address(address)
@@ -86,7 +87,7 @@ def post_communityresource_register(body):
     resource = CommunityResource(charity_number=charity_number, name=name, y=lat, x=lon,
                                  contact_name=contact_name, email=email,
                                  phone_number=phone_number, address=address,
-                                 website=website, image_uri=image_uri,
+                                 website=website, image_uri=image_uri, user_id=user_id,
                                  verified=True) #edited just here for now)
     
     resource = CommunityResource.add_community_resource(resource)

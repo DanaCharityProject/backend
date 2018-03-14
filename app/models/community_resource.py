@@ -19,6 +19,7 @@ class CommunityResource(db.Model):
     website = db.Column(db.String(64), nullable=True)
     image_uri = db.Column(db.String(64), nullable=True)
     verified = db.Column(db.Boolean, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
 
     @property
     def location(self):
