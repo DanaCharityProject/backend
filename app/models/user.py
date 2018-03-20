@@ -71,6 +71,14 @@ class UserManager():
         return user
 
     @staticmethod
+    def add_admin(username, password):
+        # username and password must be type string
+        admin = User(username=username, role=USER_ROLE_ADMIN)
+        admin.password = password
+        db.session.add(admin)
+        db.session.commit()
+
+    @staticmethod
     def edit_user(user_id, new_username):
         user = User.query.get(user_id)
         try:

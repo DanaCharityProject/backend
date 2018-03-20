@@ -100,7 +100,7 @@ def post_communityresource_register(body):
 
 @auth.login_required
 def put_community_resource_edit(body):
-    if get_current_role != USER_ROLE_ADMIN:
+    if get_current_role != USER_ROLE_ADMIN or get_current_role != body["user_id"]:
         return NoContent, 403
 
     try:
