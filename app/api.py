@@ -1,5 +1,5 @@
+from __future__ import print_function
 import json
-
 from flask import g
 from connexion import NoContent
 from geopy.geocoders import Nominatim
@@ -8,6 +8,8 @@ from .auth import auth, get_current_user, get_current_role
 from .models.user import User, UserManager, InvalidUserInfo, USER_ROLE_ADMIN, USER_ROLE_USER
 from .models.community_resource import CommunityResource, CommunityResourceManager, NoExistingCommunityResource, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
+import sys
+
 
 
 @auth.login_required
@@ -53,6 +55,7 @@ def get_nearby_communityresource(body):
 
 def post_user(body):
     user = User(username=body["username"])
+    print("REEASDFASDFASDFASDFASDFASDFASDFASDF", file=sys.stderr)
     user.password = body["password"]
     user = User.add_user(user)
 

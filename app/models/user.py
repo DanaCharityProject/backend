@@ -56,6 +56,7 @@ class User(db.Model):
 
     @staticmethod
     def add_user(user):
+        print("Hit add_user on User.py file")
         return UserManager.add_user(user)
 
 
