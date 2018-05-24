@@ -9,6 +9,7 @@ from .. import db
 USER_ROLE_USER = "user"
 USER_ROLE_ADMIN = "admin"
 
+
 class User(db.Model):
     __tablename__ = "users"
 
@@ -38,60 +39,60 @@ class User(db.Model):
             "role": self.role
         })
 
-    @staticmethod
-    def verify_auth_token(token):
-        return UserManager.get_user_by_token(token)
+    @classmethod
+    def verify_auth_token(cls, token):
+        return cls.get_user_by_token(token)
 
-    def to_dict(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "role": self.role
-        }
+    @classmethod
+    def get_user_by_username(cls, username):
+        return cls.query.filter_by(username=username.lower()).first()
 
-    @staticmethod
-    def get_user_by_username(username):
-        return UserManager.get_user_by_username(username)
+    @classmethod
+    def get_user_by_token(cls, token):
+        s = Serializer(current_app.config['SECRET_KEY'])
 
+        try:
+            data = s.loads(token)
             return cls.query.get(data["user_id"])
+        except SignatureExpired:
+            return None    # valid token, but expired
+        except BadSignature:
+            return None    # invalid token
+        except:
+            return None
 
-
-class UserManager():
-
-    @staticmethod
-    def add_user(user):
-        if User.get_user_by_username(user.username) is not None:
+    @classmethod
+    def add_user(cls, user):
+        if cls.get_user_by_username(user.username.lower()) is not None:
             return None
 
         db.session.add(user)
         db.session.commit()
+
         return user
 
-    @staticmethod
-    def edit_user(user_id, new_username):
-        user = User.query.get(user_id)
+    def edit_user(self, username):
         try:
-            if not is_valid_username(new_username):
+            if not is_valid_username(username):
                 raise InvalidUserInfo("User information is invalid.")
-            user.username = new_username
+
+            self.username = username
+            db.session.commit()
         except InvalidUserInfo:
             raise
 
-    @staticmethod
-    def get_user_by_username(username):
-        return User.query.filter_by(username=username).first()
+    def change_password(self, password):
+        self.password = password
 
-    @staticmethod
-    def get_user_by_token(token):
-        s = Serializer(current_app.config['SECRET_KEY'])
+        db.session.commit()
 
     def to_dict(self):
         return {
-            "user_id": self.user_id,
+            "id": self.user_id,
             "username": self.username,
             "role": self.role
         }
-
+    
     @classmethod
     def from_dict(cls, data):
         return cls(**data)
