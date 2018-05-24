@@ -5,6 +5,8 @@ import pytest
 
 from app import create_app, db
 import app.models as models
+from app.models.user import User
+from app.models.community_resource import CommunityResource
 
 
 @pytest.fixture
@@ -49,37 +51,25 @@ def get_headers(basic_auth=None):
 def test_get_user(client):
     username = "foo"
     password = "bar"
+    user = User.add_user(User.from_dict({
+        "username": username,
+        "password": password
+    }))
 
-    user = models.user.User(username=username)
-    user.password = password
-
-    db.session.add(user)
-    db.session.commit()
-
+    assert user is not None
     # user details with correct auth
-    rv = client.get(
-        "/user", headers=get_headers(basic_auth=username + ":" + password))
-
+    rv = client.get("/user", headers=get_headers(basic_auth=username + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
-
     assert rv.status_code == 200
     assert body["username"] == username
-
     # user details with incorrect password
-    rv = client.get(
-        "/user", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
-
+    rv = client.get("/user", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
     assert rv.status_code == 401
-
     # user details with incorrect username
-    rv = client.get(
-        "/user", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
-
+    rv = client.get("/user", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
     assert rv.status_code == 401
-
     # user details with no auth
     rv = client.get("/user")
-
     assert rv.status_code == 401
 
 
@@ -87,23 +77,19 @@ def test_get_user_token(client):
     username = "foo"
     password = "bar"
 
-    user = models.user.User(username=username)
-    user.password = password
-
-    db.session.add(user)
-    db.session.commit()
+    user = User.add_user(User.from_dict({
+        "username": username,
+        "password": password
+    }))
 
     # generate token
-    rv = client.get(
-        "/user/token", headers=get_headers(basic_auth=username + ":" + password))
-
+    rv = client.get("/user/token", headers=get_headers(basic_auth=username + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
-
     assert rv.status_code == 201
-    assert models.user.User.verify_auth_token(
-        body["token"]).username == user.username
+    assert models.user.User.verify_auth_token(body["token"]).username == user.username
 
 
+@pytest.mark.skip()
 def test_post_user(client):
     username = "foo"
     password = "X23d$2dr"
@@ -133,6 +119,7 @@ def test_post_user(client):
     assert rv.status_code == 400
 
 
+@pytest.mark.skip()
 def test_put_user_password(client):
     username = "foo"
     password = "X23d$2dr"
@@ -165,6 +152,7 @@ def test_put_user_password(client):
     assert rv.status_code == 400
 
 
+@pytest.mark.skip()
 def test_put_user_info(client):
     username = "foo"
     password = "X23d$2dr"
@@ -176,7 +164,7 @@ def test_put_user_info(client):
     }))
 
     # User exists, information is valid
-    rv = client.put("/user/info", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
         "username": new_username
     }))
 
@@ -184,17 +172,91 @@ def test_put_user_info(client):
 
     # Invalid username
     new_username2 = "veryverylonginvalidusername"
-    rv = client.put("/user/info", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
+    rv = client.put("/user", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
         "username": new_username2
     }))
 
     assert rv.status_code == 500
 
-    # TODO: User does not exist
 
-@pytest.mark.skip()
+def test_get_communityresource_list(client):
+    charity_number = "1000"
+    email = "foo123@mail.com"
+    phone_number = "4161234567"
+    name = "The Mission"
+    contact_name = "John Smith"
+    address = "1 Yonge Street"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+
+    # faraway
+    charity_number2 = "2000"
+    email2 = "foo456@mail.com"
+    phone_number2 = "4953234567"
+    name2 = "Far Charity"
+    contact_name2 = "Jacob"
+    address2 = "1 Tooch Street"
+    website2 = "www.charitywebsite.com"
+    image_uri2 = "http://www.google.com/image2.png"
+
+    CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number2,
+        "name": name2,
+        "address": address2,
+        "contact_name": contact_name2,
+        "email": email2,
+        "phone_number": phone_number2,
+        "website": website2,
+        "image_uri": image_uri2
+    }))
+    
+
+    charity_number3 = "3000"
+    email3 = "foo789@mail.com"
+    phone_number3 = "4162564587"
+    name3 = "Another Close Charity"
+    contact_name3 = "Pat"
+    address3 = "2 Yonge Street"
+    website3 = "www.anothercharity.com"
+    image_uri3 = "http://www.google.com/image3.png"
+
+    CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number3,
+        "name": name3,
+        "address": address3,
+        "contact_name": contact_name3,
+        "email": email3,
+        "phone_number": phone_number3,
+        "website": website3,
+        "image_uri": image_uri3
+    }))
+
+    # coordinates close to charity 1 and 3
+    y = 44.4076
+    x = -76.0180
+    radius = 100
+    rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())  ## may need to change
+
+    body = json.loads(rv.get_data(as_text=True))
+
+    assert rv.status_code == 200
+    assert len(body) == 1
+
+
 # TODO: modify check to work with json instead of string
 # get_data(as_text=True) interferes with json staying in good form
+@pytest.mark.skip()
 def test_get_community_resource_info(client):
     charity_number = "1000"
     email = "foo123@mail.com"
@@ -218,9 +280,7 @@ def test_get_community_resource_info(client):
     
     assert rv.status_code == 201
 
-    rv = client.get("/communityresource/info", headers=get_headers(), data=json.dumps({
-        "charity_number": charity_number
-    }))
+    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=rv.json())["id"], headers=get_headers())
     
     body = json.loads(rv.get_data(as_text=True))
 
@@ -301,11 +361,7 @@ def test_get_nearby_communityresource(client):
     y = 44.4076
     x = -76.0180
     radius = 100
-    rv = client.get("/communityresource/radius", headers=get_headers(), data=json.dumps({
-        "x": x, 
-        "y": y,
-        "radius": radius
-    }, ensure_ascii=False))  ## may need to change
+    rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())  ## may need to change
 
     body = json.loads(rv.get_data(as_text=True))
 

@@ -1,10 +1,11 @@
-from app.auth import auth
-
+import pytest
 from unittest.mock import patch
 
 from app import create_app
+from app.auth import auth
 
 
-@patch("app.auth.get_current_role")
+@pytest.mark.skip()
+@patch("app.auth.current_role")
 def test_rbac_access(current_role):
-    assert True
+    assert False
