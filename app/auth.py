@@ -9,8 +9,8 @@ token_auth = HTTPTokenAuth()
 auth = MultiAuth(basic_auth, token_auth)
 
 @basic_auth.verify_password
-def verify_password(username, password):
-    user = User.get_user_by_username(username)
+def verify_password(email, password):
+    user = User.get_user_by_email(email)
 
     if not user or not user.verify_password(password):
         return False

@@ -6,9 +6,9 @@ import app.models as models
 
 @patch("flask_sqlalchemy.SignallingSession", autospec=True)
 def test_user_password(mock_session):
-    username = "foo"
+    email = "foo"
     password = "bar"
-    user = models.user.User(user_id=1, username=username)
+    user = models.user.User(user_id=1, email=email)
     user.password = password
 
     # correct password
@@ -24,9 +24,9 @@ def test_user_password(mock_session):
 @patch("app.models.user.current_app")
 @patch("flask_sqlalchemy.SignallingSession", autospec=True)
 def test_user_token(mock_session, mock_current_app, mock_query):
-    username = "foo"
+    email = "foo"
     password = "bar"
-    user = models.user.User(user_id=1, username=username)
+    user = models.user.User(user_id=1, email=email)
     user.password = password
     mock_current_app.config = {"SECRET_KEY": "secret-key"}
     mock_query.get = {user.user_id: user}.get

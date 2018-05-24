@@ -14,11 +14,9 @@ class User(db.Model):
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True, index=True)
-    username = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    email = db.Column(db.String(256), unique=True, nullable=False, index=True)
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
-    # email = db.Column(db.String(64), unique=True,
-    #                    nullable=True, index=True)
 
     @property
     def password(self):
@@ -44,8 +42,8 @@ class User(db.Model):
         return cls.get_user_by_token(token)
 
     @classmethod
-    def get_user_by_username(cls, username):
-        return cls.query.filter_by(username=username.lower()).first()
+    def get_user_by_email(cls, email):
+        return cls.query.filter_by(email=email.lower()).first()
 
     @classmethod
     def get_user_by_token(cls, token):
@@ -63,7 +61,7 @@ class User(db.Model):
 
     @classmethod
     def add_user(cls, user):
-        if cls.get_user_by_username(user.username.lower()) is not None:
+        if cls.get_user_by_email(user.email.lower()) is not None:
             return None
 
         db.session.add(user)
@@ -76,7 +74,6 @@ class User(db.Model):
             if not is_valid_username(username):
                 raise InvalidUserInfo("User information is invalid.")
 
-            self.username = username
             db.session.commit()
         except InvalidUserInfo:
             raise
@@ -88,13 +85,18 @@ class User(db.Model):
 
     def to_dict(self):
         return {
-            "id": self.user_id,
-            "username": self.username,
+            "user_id": self.user_id,
+            "email": self.email,
             "role": self.role
         }
     
     @classmethod
     def from_dict(cls, data):
+        # Ensure email address is case-insensitive
+        email = data.get("email")
+        if email is not None:
+            data.update({"email": email.lower()})
+
         return cls(**data)
 
 

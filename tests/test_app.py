@@ -49,24 +49,35 @@ def get_headers(basic_auth=None):
 
 
 def test_get_user(client):
-    username = "foo"
+    email = "Foo"
     password = "bar"
     user = User.add_user(User.from_dict({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
     assert user is not None
+    assert User.get_user_by_email(email.upper()) is not None
     # user details with correct auth
-    rv = client.get("/user", headers=get_headers(basic_auth=username + ":" + password))
+    rv = client.get("/user", headers=get_headers(basic_auth=email + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
     assert rv.status_code == 200
-    assert body["username"] == username
+    assert body["email"] == user.email
+    # user details with correct auth but different case
+    rv = client.get("/user", headers=get_headers(basic_auth=email.upper() + ":" + password))
+    body = json.loads(rv.get_data(as_text=True))
+    assert rv.status_code == 200
+    assert body["email"] == user.email
+    # user details with correct auth
+    rv = client.get("/user", headers=get_headers(basic_auth=email + ":" + password))
+    body = json.loads(rv.get_data(as_text=True))
+    assert rv.status_code == 200
+    assert body["email"] == user.email
     # user details with incorrect password
-    rv = client.get("/user", headers=get_headers(basic_auth=username + ":" + password + "lkajfs"))
+    rv = client.get("/user", headers=get_headers(basic_auth=email + ":" + password + "lkajfs"))
     assert rv.status_code == 401
-    # user details with incorrect username
-    rv = client.get("/user", headers=get_headers(basic_auth=username + "kalfd" + ":" + password))
+    # user details with incorrect email
+    rv = client.get("/user", headers=get_headers(basic_auth=email + "kalfd" + ":" + password))
     assert rv.status_code == 401
     # user details with no auth
     rv = client.get("/user")
@@ -74,38 +85,38 @@ def test_get_user(client):
 
 
 def test_get_user_token(client):
-    username = "foo"
+    email = "foo"
     password = "bar"
 
     user = User.add_user(User.from_dict({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
     # generate token
-    rv = client.get("/user/token", headers=get_headers(basic_auth=username + ":" + password))
+    rv = client.get("/user/token", headers=get_headers(basic_auth=email + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
     assert rv.status_code == 201
-    assert models.user.User.verify_auth_token(body["token"]).username == user.username
+    assert models.user.User.verify_auth_token(body["token"]).email == user.email
 
 
 @pytest.mark.skip()
 def test_post_user(client):
-    username = "foo"
+    email = "foo"
     password = "X23d$2dr"
 
     # register new user
     rv = client.post("/user", headers=get_headers(), data=json.dumps({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
     assert rv.status_code == 201
-    assert models.user.User.get_user_by_username(username) is not None
+    assert models.user.User.get_user_by_email(email) is not None
 
-    # username must be unique
+    # email must be unique
     rv = client.post("/user", headers=get_headers(), data=json.dumps({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
@@ -113,7 +124,7 @@ def test_post_user(client):
 
     # Password is validated
     rv = client.post("/user", headers=get_headers(), data=json.dumps({
-        "username": "foo2",
+        "email": "foo2",
         "password": "bar"
     }))
     assert rv.status_code == 400
@@ -121,31 +132,31 @@ def test_post_user(client):
 
 @pytest.mark.skip()
 def test_put_user_password(client):
-    username = "foo"
+    email = "foo"
     password = "X23d$2dr"
     new_password = "DYsr2!4Fksh"
 
     rv = client.post("/user", headers=get_headers(), data=json.dumps({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
     # New password is valid
-    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=email + ":" + password), data=json.dumps({
         "password": new_password
     }))
 
     assert rv.status_code == 200
 
     # Old password no longer valid
-    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=email + ":" + password), data=json.dumps({
         "password": new_password
     }))
 
     assert rv.status_code == 401
 
     # New password mus be secure
-    rv = client.put("/user/password", headers=get_headers(basic_auth=username + ":" + new_password), data=json.dumps({
+    rv = client.put("/user/password", headers=get_headers(basic_auth=email + ":" + new_password), data=json.dumps({
         "password": "password"
     }))
 
@@ -154,26 +165,26 @@ def test_put_user_password(client):
 
 @pytest.mark.skip()
 def test_put_user_info(client):
-    username = "foo"
+    email = "foo"
     password = "X23d$2dr"
-    new_username = "newuser"
+    new_email = "newuser"
 
     rv = client.post("/user", headers=get_headers(), data=json.dumps({
-        "username": username,
+        "email": email,
         "password": password
     }))
 
     # User exists, information is valid
-    rv = client.put("/user", headers=get_headers(basic_auth=username + ":" + password), data=json.dumps({
-        "username": new_username
+    rv = client.put("/user", headers=get_headers(basic_auth=email + ":" + password), data=json.dumps({
+        "email": new_email
     }))
 
     assert rv.status_code == 200
 
-    # Invalid username
-    new_username2 = "veryverylonginvalidusername"
-    rv = client.put("/user", headers=get_headers(basic_auth=new_username + ":" + password), data=json.dumps({
-        "username": new_username2
+    # Invalid email
+    new_email2 = "veryverylonginvalidemail"
+    rv = client.put("/user", headers=get_headers(basic_auth=new_email + ":" + password), data=json.dumps({
+        "email": new_email2
     }))
 
     assert rv.status_code == 500

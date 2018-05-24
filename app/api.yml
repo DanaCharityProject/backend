@@ -1,6 +1,6 @@
 swagger: '2.0'
 info:
-  title: Dana Backend REST API
+  title: Dana Project REST API
   version: "0.1"
 consumes:
   - application/json
@@ -18,12 +18,14 @@ paths:
           schema:
             type: object
             properties:
-              id:
+              user_id:
                 type: integer
                 example: 1
-              username:
+                description: Unique user identifier.
+              email:
                 type: string
-                example: "JohnDoe"
+                example: "JohnDoe@example.com"
+                description: Email address of user.
       security:
         - basic: []
     put:
@@ -36,7 +38,8 @@ paths:
           schema:
             type: object
             properties:
-              username:
+              email:
+                example: "JohnDoe@example.com"
                 type: string
       responses:
         200:
@@ -51,15 +54,16 @@ paths:
           schema:
             type: object
             properties:
-              username:
-                type: string
-                format: username
-              password:
-                type: string
-                format: secure_password
               email:
+                example: "JohnDoe@example.com"
+                description: Email used to verify account.
                 type: string
                 format: email
+              password:
+                example: "@#Dadjl3SD#ak3"
+                description: Secure user password.
+                type: string
+                format: secure_password
       responses:
         201:
           description: New user created
@@ -68,10 +72,10 @@ paths:
             properties:
               id:
                 type: integer
-              username:
+              email:
                 type: string
         409:
-          description: Conflict exists, username taken.
+          description: Conflict exists, email taken.
   "/user/password":
     put:
       tags: [user]
@@ -116,6 +120,7 @@ paths:
             properties:
               token:
                 type: string
+                description: Timed JSON web token which can be used for authentication in place of email/password.
       security:
         - basic: []
   "/communityresource":
@@ -128,14 +133,17 @@ paths:
           in: query
           type: number
           required: true
+          description: Latitude
         - name: longitude
           in: query
           type: number
           required: true
+          description: Longitude
         - name: radius
           in: query
           type: number
           required: true
+          description: Radius (Km)
       responses:
         200:
           description: Nearby community resource list JSON returned
@@ -221,6 +229,7 @@ paths:
           in: path
           required: true
           type: integer
+          description: Unique Community Resource identifier.
       responses:
         200:
           description: New community resource created.
