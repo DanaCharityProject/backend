@@ -7,11 +7,11 @@ consumes:
 produces:
   - application/json
 paths:
-  /user:
+  "/user":
     get:
       tags: [user]
       operationId: app.api.get_user
-      summary: Return current user account details.
+      summary: Returns current user account details.
       responses:
         200:
           description: User Account Details
@@ -26,6 +26,21 @@ paths:
                 example: "JohnDoe"
       security:
         - basic: []
+    put:
+      tags: [user]
+      operationId: app.api.put_user
+      summary: Update user information
+      parameters:
+        - name: body
+          in: body
+          schema:
+            type: object
+            properties:
+              username:
+                type: string
+      responses:
+        200:
+          description: User information updated
     post:
       tags: [user]
       operationId: app.api.post_user
@@ -88,22 +103,6 @@ paths:
       responses:
         200:
           description: Password updated
-  "/user/info":
-    put:
-      tags: [user]
-      operationId: app.api.put_user_info
-      summary: Update user information
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              username:
-                type: string
-      responses:
-        200:
-          description: User information updated
   "/user/token":
     get:
       tags: [user]
@@ -119,11 +118,56 @@ paths:
                 type: string
       security:
         - basic: []
-  /communityresource:
+  "/communityresource":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_communityresource_list
+      summary: Returns community resources near a geographic point.
+      parameters:
+        - name: latitude
+          in: query
+          type: number
+          required: true
+        - name: longitude
+          in: query
+          type: number
+          required: true
+        - name: radius
+          in: query
+          type: number
+          required: true
+      responses:
+        200:
+          description: Nearby community resource list JSON returned
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: number
+                  description: |
+                    Unique code that represents a community resource in our system
+                charity_number:
+                  type: number
+                  description: |
+                    Number to represent the charity
+                name:
+                  type: string
+                  description: |
+                    Name of the organization
+                longitude:
+                  type: number
+                  description: |
+                    The longitude on which the community resource is located
+                latitude:
+                  type: number
+                  description: |
+                    The latitude on which the community resource is located
     post:
       tags: [communityresource]
-      operationId: app.api.post_communityresource_register
-      summary: Create a new community resource
+      operationId: app.api.post_communityresource
+      summary: Register a new community resource
       parameters:
         - name: body
           in: body
@@ -167,31 +211,30 @@ paths:
                 type: string
               verified:
                 type: boolean
-  "/communityresource/info":
+  "/communityresource/{community_resource_id}":
     get:
       tags: [communityresource]
-      operationId: app.api.get_communityresource_info
-      summary: Returns a JSON object containing community resource info.
+      operationId: app.api.get_communityresource_detail
+      summary: Returns information on a specific Community Resource.
       parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              charity_number:
-                type: string
-                description: |
-                  The number must exist in the system.
+        - name: community_resource_id
+          in: path
+          required: true
+          type: integer
       responses:
         200:
-          description: Community resource JSON returned
+          description: New community resource created.
     put:
       tags: [communityresource]
-      operationId: app.api.put_community_resource_edit
+      operationId: app.api.put_communityresource
       summary: Edit an existing community resource
       description: |
         The community resource endpoint allows a user to edit an existing community resource. Currently the Backend method takes in all the community resource field values at once.
       parameters:
+        - name: community_resource_id
+          in: path
+          required: true
+          type: integer
         - name: body
           in: body
           description: |
@@ -231,10 +274,6 @@ paths:
                   of length 10. It has to start with 414 or 905
                   or 647 since we are currently focused on 
                   community resource centers in Toronto.
-              address:
-                type: string
-                description: |
-                  Must have proper address format.
               website:
                 type: string
                 description: |
@@ -248,58 +287,6 @@ paths:
           description: Community resource edited
       security:
         - basic: []
-  "/communityresource/radius":
-    get:
-      tags: [communityresource]
-      operationId: app.api.get_nearby_communityresource
-      summary: Returns a JSON object containing a list of community resources within given radius.
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              x:
-                type: number
-                description: |
-                  The longitude on which the community resource is located
-              y:
-                type: number
-                description: |
-                  The latitude on which the community resource is located
-              radius:
-                type: number
-                description: |
-                  The distance in kilometers
-      responses:
-        200:
-          description: Nearby community resource list JSON returned
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                id:
-                  type: number
-                  description: |
-                    Unique code that represents a community resource in our system
-                charity_number:
-                  type: number
-                  description: |
-                    Number to represent the charity
-                name:
-                  type: string
-                  description: |
-                    Name of the organization
-                x:
-                  type: number
-                  description: |
-                    The longitude on which the community resource is located
-                y:
-                  type: number
-                  description: |
-                    The latitude on which the community resource is located
-
 securityDefinitions:
   basic:
     type: basic
