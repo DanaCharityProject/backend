@@ -12,9 +12,8 @@ USER_ROLE_ADMIN = "admin"
 class User(db.Model):
     __tablename__ = "users"
 
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True,
-                         nullable=False, index=True)
+    user_id = db.Column(db.Integer, primary_key=True, index=True)
+    username = db.Column(db.String(64), unique=True, nullable=False, index=True)
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     # email = db.Column(db.String(64), unique=True,
@@ -35,7 +34,7 @@ class User(db.Model):
         s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
 
         return s.dumps({
-            "user_id": self.id,
+            "user_id": self.user_id,
             "role": self.role
         })
 
@@ -54,10 +53,7 @@ class User(db.Model):
     def get_user_by_username(username):
         return UserManager.get_user_by_username(username)
 
-    @staticmethod
-    def add_user(user):
-        print("Hit add_user on User.py file")
-        return UserManager.add_user(user)
+            return cls.query.get(data["user_id"])
 
 
 class UserManager():
@@ -89,19 +85,16 @@ class UserManager():
     def get_user_by_token(token):
         s = Serializer(current_app.config['SECRET_KEY'])
 
-        try:
-            data = s.loads(token)
-            return User.query.get(data["user_id"])
-        except SignatureExpired:
-            return None    # valid token, but expired
-        except BadSignature:
-            return None    # invalid token
-        except:
-            return None
+    def to_dict(self):
+        return {
+            "user_id": self.user_id,
+            "username": self.username,
+            "role": self.role
+        }
 
-    @staticmethod
-    def change_password(user, password):
-        user.password = password
+    @classmethod
+    def from_dict(cls, data):
+        return cls(**data)
 
 
 class InvalidUserInfo(Exception):
