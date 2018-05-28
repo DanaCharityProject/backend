@@ -9,6 +9,8 @@ services:
     depends_on:
       - db
   db:
-    image: postgres
+    image: kartoza/postgis
     environment:
-      POSTGRES_PASSWORD: test
+      POSTGRES_USER: postgres
+      POSTGRES_PASS: test
+      ALLOW_IP_RANGE: 0.0.0.0/0
