@@ -9,6 +9,8 @@ from app.models.user import User
 from app.models.community_resource import CommunityResource
 from geoalchemy2.elements import WKTElement
 
+import random
+
 
 @pytest.fixture
 def client():
@@ -596,10 +598,13 @@ def test_post_community_resource_info(client):
 '''
 
 def test_long_lat_to_point():
-    test_long = 42
-    test_lat = 85
-    res = CommunityResource.__long_lat_to_point__(test_long, test_lat)
-    expected = WKTElement("POINT(" + str(test_long) + " " + str(test_lat) + ")")
+    for i in range(5):
+        test_long = random.uniform(-180, 180)
+        test_lat = random.uniform(-90, 90)
+        res = CommunityResource.__long_lat_to_point__(test_long, test_lat)
+        expected = WKTElement("POINT(" + str(test_long) + " " + str(test_lat) + ")")
 
-    assert str(res) == str(expected)
-    assert type(res) == type(expected)
+        print("Response: ", str(res))
+        print("Expected: ", str(expected))
+        assert str(res) == str(expected)
+        assert type(res) == type(expected)
