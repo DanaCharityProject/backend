@@ -2,7 +2,7 @@ from .. import db
 from ..validators import is_valid_username, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
-
+from geoalchemy2.elements import WKTElement
 
 class CommunityResource(db.Model):
     __tablename__ = "community_resources"
@@ -114,6 +114,11 @@ class CommunityResource(db.Model):
         db.session.commit()
 
         return resource
+
+    @staticmethod
+    def __long_lat_to_point__(longitutde, latitude):
+        pointString = "POINT({} {})".format(longitutde, latitude)
+        return WKTElement(pointString, 4326)
 
 
 class NoExistingCommunityResource(Exception):
