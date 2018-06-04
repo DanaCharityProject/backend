@@ -10,6 +10,7 @@ application = create_app(os.environ.get("DANA_CONFIG", "development")).app
 def create_db():
     """Create tables in SQL database from SQLAlchemy models.
     """
+    db.engine.execute("CREATE EXTENSION IF NOT EXISTS postgis;")
     db.create_all()
 
 
@@ -17,4 +18,5 @@ def create_db():
 def drop_db():
     """Drop all rows and tables from SQL database.
     """
+    db.engine.execute("DROP EXTENSION IF EXISTS postgis CASCADE;")
     db.drop_all()
