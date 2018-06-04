@@ -3,22 +3,23 @@ from ..validators import is_valid_username, is_valid_email, is_valid_phone_numbe
 from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
 from geoalchemy2.elements import WKTElement
+from sqlalchemy import Column, String, Integer, Boolean, Float
 
 class CommunityResource(db.Model):
     __tablename__ = "community_resources"
 
-    community_resource_id = db.Column(db.Integer, primary_key=True)
-    charity_number = db.Column(db.Integer, unique=True, nullable=False, index=True)
-    name = db.Column(db.String(64), nullable=False)
-    latitude = db.Column(db.Float, nullable=False)
-    longitude = db.Column(db.Float, nullable=False)
-    contact_name = db.Column(db.String(64), nullable=False)
-    email = db.Column(db.String(64), nullable=False)
-    phone_number = db.Column(db.String(32), nullable=False)
-    address = db.Column(db.String(64), nullable=False)
-    website = db.Column(db.String(64), nullable=True)
-    image_uri = db.Column(db.String(64), nullable=True)
-    verified = db.Column(db.Boolean, default=False, nullable=False)
+    community_resource_id = Column(Integer, primary_key=True)
+    charity_number = Column(Integer, unique=True, nullable=False, index=True)
+    name = Column(String(64), nullable=False)
+    latitude = Column(Float, nullable=False)
+    longitude = Column(Float, nullable=False)
+    contact_name = Column(String(64), nullable=False)
+    email = Column(String(64), nullable=False)
+    phone_number = Column(String(32), nullable=False)
+    address = Column(String(64), nullable=False)
+    website = Column(String(64), nullable=True)
+    image_uri = Column(String(64), nullable=True)
+    verified = Column(Boolean, default=False, nullable=False)
 
     @property
     def location(self):
