@@ -195,14 +195,17 @@ def test_put_user_info(client):
 
     assert rv.status_code == 500
 
-@pytest.mark.skip
+
 def test_get_communityresource_list(client):
+    SRID = "SRID=4326;"
+
     charity_number = "1000"
     email = "foo123@mail.com"
     phone_number = "4161234567"
     name = "The Mission"
     contact_name = "John Smith"
     address = "1 Yonge Street"
+    coordinates = SRID + "POINT(43.70649 -79.39806)"
     website = "www.test.com"
     image_uri = "http://www.google.com/image.png"
 
@@ -210,6 +213,7 @@ def test_get_communityresource_list(client):
         "charity_number": charity_number,
         "name": name,
         "address": address,
+        "coordinates": coordinates,
         "contact_name": contact_name,
         "email": email,
         "phone_number": phone_number,
@@ -224,6 +228,7 @@ def test_get_communityresource_list(client):
     name2 = "Far Charity"
     contact_name2 = "Jacob"
     address2 = "1 Tooch Street"
+    coordinates2 = SRID + "POINT(38.88763 -119.98271)"
     website2 = "www.charitywebsite.com"
     image_uri2 = "http://www.google.com/image2.png"
 
@@ -231,13 +236,13 @@ def test_get_communityresource_list(client):
         "charity_number": charity_number2,
         "name": name2,
         "address": address2,
+        "coordinates": coordinates2,
         "contact_name": contact_name2,
         "email": email2,
         "phone_number": phone_number2,
         "website": website2,
         "image_uri": image_uri2
     }))
-    
 
     charity_number3 = "3000"
     email3 = "foo789@mail.com"
@@ -245,6 +250,7 @@ def test_get_communityresource_list(client):
     name3 = "Another Close Charity"
     contact_name3 = "Pat"
     address3 = "2 Yonge Street"
+    coordinates3 = SRID + "POINT(43.70273 -79.39770)"
     website3 = "www.anothercharity.com"
     image_uri3 = "http://www.google.com/image3.png"
 
@@ -252,6 +258,7 @@ def test_get_communityresource_list(client):
         "charity_number": charity_number3,
         "name": name3,
         "address": address3,
+        "coordinates": coordinates3,
         "contact_name": contact_name3,
         "email": email3,
         "phone_number": phone_number3,
@@ -259,16 +266,17 @@ def test_get_communityresource_list(client):
         "image_uri": image_uri3
     }))
 
-    # coordinates close to charity 1 and 3
+    # coordinates close to charities 1 and 3
     y = 44.4076
     x = -76.0180
-    radius = 100
+    radius = 200
     rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())  ## may need to change
 
     body = json.loads(rv.get_data(as_text=True))
 
     assert rv.status_code == 200
-    assert len(body) == 1
+    assert len(body) == 2
+    assert body[0][0] == 1 and body[1][0] == 3
 
 
 # TODO: modify check to work with json instead of string
@@ -543,9 +551,9 @@ def test_put_community_resource_info(client):
     })) 
     assert rv.status_code == 400 # working
 
-'''
-def test_post_community_resource_info(client):
 
+@pytest.mark.skip
+def test_post_community_resource_info(client):
     charity_number = "0000"
     email = "foo123@mail.com"
     phone_number = "4161234567"
@@ -554,57 +562,58 @@ def test_post_community_resource_info(client):
     address = "1 Yonge Street"
 
     # I changed the put handler in api.py a bit- now I send in the verified=True value
-    rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
+    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
         "charity_number": charity_number,
         "name": name,
         "address": address,
         "contact_name": contact_name,
         "email": email,
-        "phone_number": phone_number 
+        "phone_number": phone_number,
+        "coordinates": "POINT(1 1)"
     }))
+
     assert rv.status_code == 200
 
-    # repeat charity_number
-    rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "charity_number": "0000",
-        "name": "Food bank 3",
-        "address": "2 Bloor ave",
-        "contact_name": "Jane Doe",
-        "email": "email@email.com",
-        "phone_number": "4161234567"
-    })) 
-    assert rv.status_code == 500 # working
+    # # repeat charity_number
+    # rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
+    #     "charity_number": "0000",
+    #     "name": "Food bank 3",
+    #     "address": "2 Bloor ave",
+    #     "contact_name": "Jane Doe",
+    #     "email": "email@email.com",
+    #     "phone_number": "4161234567"
+    # })) 
+    # assert rv.status_code == 500 # working
 
-    # invalid email-
-    rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "charity_number": "2000",
-        "name": "Food bank 4",
-        "address": "2 Bloor ave",
-        "contact_name": "Jane Doe",
-        "email": "email",
-        "phone_number": "4161234567"
-    })) 
-    assert rv.status_code == 400  # working
-'''
+    # # invalid email-
+    # rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
+    #     "charity_number": "2000",
+    #     "name": "Food bank 4",
+    #     "address": "2 Bloor ave",
+    #     "contact_name": "Jane Doe",
+    #     "email": "email",
+    #     "phone_number": "4161234567"
+    # })) 
+    # assert rv.status_code == 400  # working
 
-    # bad phone number length
-'''
-    rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
-        "charity_number": "3000",
-        "name": "Food bank 3",
-        "address": "2 Bloor ave",
-        "contact_name": "Jane Doe",
-        "email": "email@email.com",
-        "phone_number": "4161234"
-    })) 
-    assert rv.status_code == 500
-'''
+    # # bad phone number length
+
+    # rv = client.post("/communityresource/register", headers=get_headers(), data=json.dumps({
+    #     "charity_number": "3000",
+    #     "name": "Food bank 3",
+    #     "address": "2 Bloor ave",
+    #     "contact_name": "Jane Doe",
+    #     "email": "email@email.com",
+    #     "phone_number": "4161234"
+    # })) 
+    # assert rv.status_code == 500
+
 
 def test_long_lat_to_point():
     for i in range(5):
         test_long = random.uniform(-180, 180)
         test_lat = random.uniform(-90, 90)
-        res = CommunityResource.__long_lat_to_point__(test_long, test_lat)
+        res = CommunityResource.long_lat_to_point(test_long, test_lat)
         expected = WKTElement("POINT(" + str(test_long) + " " + str(test_lat) + ")")
 
         print("Response: ", str(res))

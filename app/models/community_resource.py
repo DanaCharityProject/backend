@@ -4,7 +4,7 @@ from geopy.geocoders import Nominatim
 from geopy.distance import vincenty
 from geoalchemy2 import WKTElement
 from geoalchemy2 import Geometry
-from sqlalchemy import Column, String, Integer, Boolean, Float
+from sqlalchemy import Column, String, Integer, Boolean, Float, func, select
 
 class CommunityResource(db.Model):
     __tablename__ = "community_resources"
@@ -12,7 +12,7 @@ class CommunityResource(db.Model):
     community_resource_id = Column(Integer, primary_key=True)
     charity_number = Column(Integer, unique=True, nullable=False, index=True)
     name = Column(String(64), nullable=False)
-    coordinates = Column(Geometry('POINT'), nullable=False)
+    coordinates = Column(Geometry('POINT', srid=4326), nullable=False)
     contact_name = Column(String(64), nullable=False)
     email = Column(String(64), nullable=False)
     phone_number = Column(String(32), nullable=False)
@@ -64,23 +64,17 @@ class CommunityResource(db.Model):
 
         return resource
 
-    # # Returns a list of resources within a given radius of latitude, longitude
-    # @classmethod
-    # def get_resources_by_radius(cls, longitude, latitude, radius):
-    #     all_community_resources = cls.query.all()
-
-    #     for community_resource in all_community_resources:
-    #         if vincenty((community_resource.longitude, community_resource.latitude), (longitude, latitude)).kilometers > radius:
-    #             all_community_resources.remove(community_resource)
-
-    #     return all_community_resources
+    # Returns a list of resources within a given radius of latitude, longitude
+    @classmethod
+    def get_resources_by_radius(cls, longitude, latitude, radius):
+        return db.session.query(CommunityResource.community_resource_id, func.ST_AsGeoJSON(CommunityResource.coordinates)).filter(func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)).all()
 
     @staticmethod
     def coordinates_from_address(address):
         geolocator = Nominatim()
         location = geolocator.geocode(address)
 
-        return CommunityResource.__long_lat_to_point__(location.longitude, location.latitude)
+        return CommunityResource.long_lat_to_point(location.longitude, location.latitude)
 
 
     @classmethod
@@ -102,7 +96,7 @@ class CommunityResource(db.Model):
                 "New resource center name cannot be empty")
 
         resource.name = new_name
-        resource.coordinates = CommunityResource.__long_lat_to_point__(new_long, new_lat)
+        resource.coordinates = CommunityResource.long_lat_to_point(new_long, new_lat)
         resource.contact_name = new_contact_name
         resource.email = new_email
         resource.phone_number = new_phone_number
@@ -115,7 +109,7 @@ class CommunityResource(db.Model):
         return resource
 
     @staticmethod
-    def __long_lat_to_point__(longitutde, latitude):
+    def long_lat_to_point(longitutde, latitude):
         pointString = "POINT({} {})".format(longitutde, latitude)
         return WKTElement(pointString, 4326)
 

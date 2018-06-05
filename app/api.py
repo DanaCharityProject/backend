@@ -6,6 +6,8 @@ from .auth import auth, current_user, current_role
 from .models.user import User, InvalidUserInfo, USER_ROLE_ADMIN, USER_ROLE_USER
 from .models.community_resource import CommunityResource, NoExistingCommunityResource, InvalidCommunityResourceInfo
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
+from sqlalchemy import func
+
 import sys
 
 
@@ -47,9 +49,7 @@ def get_user_token():
 
 
 def get_communityresource_list(longitude, latitude, radius):
-    community_resources = CommunityResource.get_resources_by_radius(longitude=longitude, latitude=latitude, radius=radius)
-
-    return [community_resource.to_dict() for community_resource in community_resources], 200
+    return CommunityResource.get_resources_by_radius(longitude=longitude, latitude=latitude, radius=radius)
 
 
 @auth.login_required
