@@ -314,87 +314,8 @@ def test_get_community_resource_info(client):
     coordinate_result = json.loads(coordinate_json)
     assert SRID+"POINT({} {})".format(coordinate_result["coordinates"][0],coordinate_result["coordinates"][1]) == coordinates
 
-
-@pytest.mark.skip()
-def test_get_nearby_communityresource(client):
-    charity_number = "1000"
-    email = "foo123@mail.com"
-    phone_number = "4161234567"
-    name = "The Mission"
-    contact_name = "John Smith"
-    address = "1 Yonge Street"
-    website = "www.test.com"
-    image_uri = "http://www.google.com/image.png"
-
-    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
-        "charity_number": charity_number,
-        "name": name,
-        "address": address,
-        "contact_name": contact_name,
-        "email": email,
-        "phone_number": phone_number,
-        "website": website,
-        "image_uri": image_uri
-    }))
-    
-    assert rv.status_code == 201
-
-    # faraway
-    charity_number2 = "2000"
-    email2 = "foo456@mail.com"
-    phone_number2 = "4953234567"
-    name2 = "Far Charity"
-    contact_name2 = "Jacob"
-    address2 = "1 Tooch Street"
-    website2 = "www.charitywebsite.com"
-    image_uri2 = "http://www.google.com/image2.png"
-
-    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
-        "charity_number": charity_number2,
-        "name": name2,
-        "address": address2,
-        "contact_name": contact_name2,
-        "email": email2,
-        "phone_number": phone_number2,
-        "website": website2,
-        "image_uri": image_uri2
-    }))
-    
-    assert rv.status_code == 201
-
-    charity_number3 = "3000"
-    email3 = "foo789@mail.com"
-    phone_number3 = "4162564587"
-    name3 = "Another Close Charity"
-    contact_name3 = "Pat"
-    address3 = "2 Yonge Street"
-    website3 = "www.anothercharity.com"
-    image_uri3 = "http://www.google.com/image3.png"
-
-    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
-        "charity_number": charity_number3,
-        "name": name3,
-        "address": address3,
-        "contact_name": contact_name3,
-        "email": email3,
-        "phone_number": phone_number3,
-        "website": website3,
-        "image_uri": image_uri3
-    }))
-    
-    assert rv.status_code == 201
-
-    # coordinates close to charity 1 and 3
-    y = 44.4076
-    x = -76.0180
-    radius = 100
-    rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())  ## may need to change
-
-    body = json.loads(rv.get_data(as_text=True))
-
-    assert rv.status_code == 200
-    # assert body == "[[1, 1000, \"The Mission\", -76.0179521, 44.4075521], [3, 3000, \"Another Close Charity\", -79.4063612, 43.7451047]]"
-
+    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=2, headers=get_headers()))
+    assert rv.status_code == 500
 
 # TODO: cases for invalid website and image_uri
 '''
