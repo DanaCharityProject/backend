@@ -50,8 +50,12 @@ class CommunityResource(db.Model):
         return obj
 
     @classmethod
-    def get_community_resource_by_id(cls, communit_resource_id):
-        return cls.query.get(communit_resource_id=communit_resource_id)
+    def get_community_resource_by_id(cls, community_resource_id):
+        community_resource = cls.query.filter_by(community_resource_id=community_resource_id).first()
+        coordinate_json = db.session.query(func.ST_AsGeoJSON(CommunityResource.coordinates)).filter_by(community_resource_id=community_resource_id).first()
+        community_resource_geo_json = community_resource.to_dict()
+        community_resource_geo_json['coordinates'] = coordinate_json
+        return community_resource_geo_json
 
     @classmethod
     def get_community_resource_by_charity_number(charity_number):

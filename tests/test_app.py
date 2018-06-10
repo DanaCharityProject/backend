@@ -270,7 +270,7 @@ def test_get_communityresource_list(client):
     y = 44.4076
     x = -76.0180
     radius = 200
-    rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())  ## may need to change
+    rv = client.get("/communityresource?longitude={longitude}&latitude={latitude}&radius={radius}".format(longitude=x, latitude=y, radius=radius), headers=get_headers())
 
     body = json.loads(rv.get_data(as_text=True))
 
@@ -279,38 +279,40 @@ def test_get_communityresource_list(client):
     assert body[0][0] == 1 and body[1][0] == 3
 
 
-# TODO: modify check to work with json instead of string
-# get_data(as_text=True) interferes with json staying in good form
-@pytest.mark.skip()
 def test_get_community_resource_info(client):
+    SRID = "SRID=4326;"
+
     charity_number = "1000"
     email = "foo123@mail.com"
     phone_number = "4161234567"
     name = "The Mission"
     contact_name = "John Smith"
     address = "1 Yonge Street"
+    coordinates = SRID + "POINT(43.70649 -79.39806)"
     website = "www.test.com"
     image_uri = "http://www.google.com/image.png"
 
-    rv = client.post("/communityresource", headers=get_headers(), data=json.dumps({
+    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
         "charity_number": charity_number,
         "name": name,
         "address": address,
+        "coordinates": coordinates,
         "contact_name": contact_name,
         "email": email,
         "phone_number": phone_number,
         "website": website,
         "image_uri": image_uri
     }))
-    
-    assert rv.status_code == 201
 
-    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=rv.json())["id"], headers=get_headers())
-    
+    assert community_resource is not None
+    assert CommunityResource.get_community_resource_by_id(1) is not None
+    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=1, headers=get_headers()))
     body = json.loads(rv.get_data(as_text=True))
-
     assert rv.status_code == 200
-    #assert body == "{\"address\": \"" + address + "\", \"image_uri\": \"" + image_uri + "\", \"name\": \"" + name + "\", \"website\": \"" + website + "\"}"
+    assert body["charity_number"] == int(charity_number)
+    coordinate_json = body["coordinates"][0]
+    coordinate_result = json.loads(coordinate_json)
+    assert SRID+"POINT({} {})".format(coordinate_result["coordinates"][0],coordinate_result["coordinates"][1]) == coordinates
 
 
 @pytest.mark.skip()

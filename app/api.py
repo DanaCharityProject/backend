@@ -85,11 +85,10 @@ def post_communityresource(body):
 
 def get_communityresource_detail(community_resource_id):
     try:
-        community_resource = CommunityResource.get_resource_by_id(community_resource_id)
+        community_resource = CommunityResource.get_community_resource_by_id(community_resource_id)
     except NoExistingCommunityResource:
         return NoContent, 500
-
-    return community_resource.to_dict(), 200
+    return community_resource, 200
 
 
 @auth.login_required
