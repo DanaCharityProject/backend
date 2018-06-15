@@ -1,7 +1,8 @@
 import os
 
 from app import create_app, db
-from app.models import CommunityResource, User
+from app.models.community_resource import CommunityResource
+from app.models.user import User
 
 # Expose flask application from inside connexion.
 application = create_app(os.environ.get("DANA_CONFIG", "development")).app
