@@ -14,3 +14,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASS: test
       ALLOW_IP_RANGE: 0.0.0.0/0
+      PGUSER: postgres
+      PGPASSWORD: test
+      PGHOST: "localhost"
