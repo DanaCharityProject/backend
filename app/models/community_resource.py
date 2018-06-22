@@ -76,7 +76,7 @@ class CommunityResource(db.Model):
     # Returns a list of resources within a given radius of latitude, longitude
     @classmethod
     def get_resources_by_radius(cls, longitude, latitude, radius):
-        return db.session.query(CommunityResource.community_resource_id, func.ST_AsGeoJSON(CommunityResource.coordinates)).filter(func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)).all()
+        return db.session.query(CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)).filter(func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)).all()
 
     @staticmethod
     def coordinates_from_address(address):

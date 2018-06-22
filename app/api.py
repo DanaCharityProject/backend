@@ -49,7 +49,12 @@ def get_user_token():
 
 
 def get_communityresource_list(longitude, latitude, radius):
-    return CommunityResource.get_resources_by_radius(longitude=longitude, latitude=latitude, radius=radius)
+    return [{
+        "community_resource_id": community_resource.community_resource_id,
+        "name": community_resource.name,
+        "address": community_resource.address,
+        "location": json.loads(location)
+    } for (community_resource, location) in CommunityResource.get_resources_by_radius(longitude=longitude, latitude=latitude, radius=radius)]
 
 
 @auth.login_required
@@ -87,7 +92,7 @@ def get_communityresource_detail(community_resource_id):
     try:
         community_resource = CommunityResource.get_community_resource_by_id(community_resource_id)
     except NoExistingCommunityResource:
-        return NoContent, 500
+        return NoContent, 404
     return community_resource, 200
 
 
@@ -95,7 +100,6 @@ def get_communityresource_detail(community_resource_id):
 def put_communityresource(community_resource_id, body):
     if current_role() != USER_ROLE_ADMIN:
         return NoContent, 403
-
     try:
         (longitude, latitude) = CommunityResource.coordinates_from_address(body["address"])
 

@@ -152,73 +152,30 @@ paths:
             items:
               type: object
               properties:
-                id:
+                community_resource_id:
                   type: number
-                  description: |
-                    Unique code that represents a community resource in our system
-                charity_number:
-                  type: number
-                  description: |
-                    Number to represent the charity
+                  description: Unique community resource identifier.
                 name:
                   type: string
+                  description: Name of the community resource.
+                  example: Scott's Mission
+                address:
+                  type: string
+                  description: Address of the community resource.
+                  example: 123 Yonge St. Toronto, On
+                location:
+                  type: object
+                  properties:
+                    coordinates:
+                      type: array
+                      items:
+                        type: number
+                        example: [43.70273, -79.3977]
+                    type:
+                      type: string
+                      example: "Point"
                   description: |
-                    Name of the organization
-                longitude:
-                  type: number
-                  description: |
-                    The longitude on which the community resource is located
-                latitude:
-                  type: number
-                  description: |
-                    The latitude on which the community resource is located
-    post:
-      tags: [communityresource]
-      operationId: app.api.post_communityresource
-      summary: Register a new community resource
-      parameters:
-        - name: body
-          in: body
-          schema:
-            type: object
-            properties:
-              number:
-                type: string
-              name:
-                type: string
-              address:
-                type: string
-              contact_name:
-                type: string
-              email:
-                type: string
-                format: email
-              phone_number:
-                type: string
-      responses:
-        200:
-          description: New community resource created
-          schema:
-            type: object
-            properties:
-              id:
-                type: integer
-              charity_number:
-                type: integer
-              name:
-                type: string
-              y:
-                type: number
-              x:
-                type: number
-              contact_name:
-                type: string
-              email:
-                type: string
-              phone_number:
-                type: string
-              verified:
-                type: boolean
+                    Location of the community resource as a GeoJson point.
   "/communityresource/{community_resource_id}":
     get:
       tags: [communityresource]
@@ -233,69 +190,6 @@ paths:
       responses:
         200:
           description: New community resource created.
-    put:
-      tags: [communityresource]
-      operationId: app.api.put_communityresource
-      summary: Edit an existing community resource
-      description: |
-        The community resource endpoint allows a user to edit an existing community resource. Currently the Backend method takes in all the community resource field values at once.
-      parameters:
-        - name: community_resource_id
-          in: path
-          required: true
-          type: integer
-        - name: body
-          in: body
-          description: |
-            The parameters for this function are- the number(id) of
-            a community resource, the organization name, the address,
-            the contact person's name, contact email address and the
-            phone number of the contact person.
-          schema:
-            type: object
-            properties:
-              charity_number:
-                type: string
-                description: |
-                  The number must exist in the system.
-              name:
-                type: string
-                description: |
-                  Name of the organization cannot be empty string.
-              address:
-                type: string
-                description: |
-                  The address of the community resource must exist.
-              contact_name:
-                type: string
-                description: |
-                  The name of a person cannot have non-alphabet
-                  characters.
-              email:
-                type: string
-                format: email
-                description: |
-                  Must have a proper email format - <name>@<domain>.<domain-suffix>
-              phone_number:
-                type: string
-                description: |
-                  The phone number has to be purely numeric and
-                  of length 10. It has to start with 414 or 905
-                  or 647 since we are currently focused on 
-                  community resource centers in Toronto.
-              website:
-                type: string
-                description: |
-                  Must have proper url format.
-              image_uri:
-                type: string
-                description: |
-                  Must have proper url format.
-      responses:
-        200:
-          description: Community resource edited
-      security:
-        - basic: []
 securityDefinitions:
   basic:
     type: basic
