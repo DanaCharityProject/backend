@@ -317,6 +317,39 @@ def test_get_community_resource_info(client):
     rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=2, headers=get_headers()))
     assert rv.status_code == 404
 
+def test_point_in_polygon(client):
+    SRID = "SRID=4326;"
+
+    charity_number = "1000"
+    email = "foo123@mail.com"
+    phone_number = "4161234567"
+    name = "The Mission"
+    contact_name = "John Smith"
+    address = "1 Yonge Street"
+    coordinates = SRID + "POINT(43.643205 -79.374143)"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "coordinates": coordinates,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+
+    assert community_resource is not None
+    assert CommunityResource.get_community_resource_by_id(1) is not None
+
+    # returns list of tuple: [(CommunityResource, geoJSON)]
+    res = CommunityResource.find_resources_inside_shape()
+    assert len(res) == 1
+    assert res[0][0].name == name
+
 # TODO: cases for invalid website and image_uri
 '''
 "charity_number":"1001"

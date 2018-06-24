@@ -76,7 +76,11 @@ class CommunityResource(db.Model):
     # Returns a list of resources within a given radius of latitude, longitude
     @classmethod
     def get_resources_by_radius(cls, longitude, latitude, radius):
-        return db.session.query(CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)).filter(func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)).all()
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)
+            ).all()
 
     @staticmethod
     def coordinates_from_address(address):
@@ -84,7 +88,6 @@ class CommunityResource(db.Model):
         location = geolocator.geocode(address)
 
         return CommunityResource.long_lat_to_point(location.longitude, location.latitude)
-
 
     @classmethod
     def edit_community_resource(cls, community_resource_id, new_name, new_lat, new_long, new_contact_name, new_email, new_phone_number, new_address, new_website, new_image_uri):
@@ -121,6 +124,17 @@ class CommunityResource(db.Model):
     def long_lat_to_point(longitutde, latitude):
         pointString = "POINT({} {})".format(longitutde, latitude)
         return WKTElement(pointString, 4326)
+    
+    @staticmethod
+    def find_resources_inside_shape():
+        # polygon surrounds 1 yonge street coordinates
+        polygonString = "POLYGON((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321))"
+        polygon = WKTElement(polygonString, 4326)
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_Contains(polygon, CommunityResource.coordinates)
+            ).all()
 
 
 class NoExistingCommunityResource(Exception):
