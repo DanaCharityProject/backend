@@ -276,7 +276,7 @@ def test_get_communityresource_list(client):
 
     assert rv.status_code == 200
     assert len(body) == 2
-    assert body[0][0] == 1 and body[1][0] == 3
+    assert body[0]['community_resource_id'] == 1 and body[1]['community_resource_id'] == 3
 
 
 def test_get_community_resource_info(client):
@@ -315,7 +315,7 @@ def test_get_community_resource_info(client):
     assert SRID+"POINT({} {})".format(coordinate_result["coordinates"][0],coordinate_result["coordinates"][1]) == coordinates
 
     rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=2, headers=get_headers()))
-    assert rv.status_code == 500
+    assert rv.status_code == 404
 
 # TODO: cases for invalid website and image_uri
 '''
