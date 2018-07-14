@@ -1,5 +1,6 @@
 FROM python:3.5-alpine
 ADD . /code
+ADD db_info /db_info
 VOLUME /code
 WORKDIR /code
 RUN pip install -r requirements.txt

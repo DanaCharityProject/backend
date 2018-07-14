@@ -63,13 +63,16 @@ class CommunityResource(db.Model):
         return community_resource_geo_json
 
     @classmethod
-    def get_community_resource_by_charity_number(charity_number):
+    def get_community_resource_by_charity_number(cls, charity_number):
         return cls.query.filter_by(charity_number=charity_number).first()
 
-    @staticmethod
-    def add_community_resource(resource):
-        db.session.add(resource)
-        db.session.commit()
+    @classmethod
+    def add_community_resource(cls, resource):
+        if not cls.query.filter_by(community_resource_id=resource.community_resource_id).first():
+            # This means there's an existing entry for this id and we shouldn't enter the same one
+            # TODO: maybe update the existing entry?
+            db.session.add(resource)
+            db.session.commit()
 
         return resource
 
@@ -128,7 +131,7 @@ class CommunityResource(db.Model):
     @staticmethod
     def find_resources_inside_shape():
         # polygon surrounds 1 yonge street coordinates
-        polygonString = "POLYGON((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321))"
+        polygonString = "MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))"
         polygon = WKTElement(polygonString, 4326)
         return db.session.query(
                 CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
