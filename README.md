@@ -10,6 +10,8 @@ docker-compose build
 docker-compose up -d db 
 # Initialize the newly created database.
 docker-compose run --no-deps --rm app flask create_db
+# Populate the database with data from shapefiles
+docker-compose run --no-deps --rm app flask populate_db
 # Start the application.
 docker-compose run app
 ```

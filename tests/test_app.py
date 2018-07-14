@@ -2,6 +2,7 @@ import base64
 import json
 
 import pytest
+import pygeoif
 
 from app import create_app, db
 import app.models as models
@@ -316,6 +317,21 @@ def test_get_community_resource_info(client):
 
     rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=2, headers=get_headers()))
     assert rv.status_code == 404
+
+
+def test_populate_db(client):
+    CommunityResource.populate_db()
+    # pulled from parsed shapefile
+    expected = {'index': 55, 'name': 'YMCA House', 'shape': 'POINT (-79.39800551 43.64818818)'}
+
+    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=55, headers=get_headers()))
+    assert rv.status_code == 200
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert body['name'] == expected['name']
+    coordinates = json.loads(body['coordinates'][0])['coordinates']
+    assert 'POINT ({} {})'.format(coordinates[0], coordinates[1]) == expected['shape']
+
 
 def test_point_in_polygon(client):
     SRID = "SRID=4326;"
