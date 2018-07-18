@@ -7,11 +7,12 @@
 ```bash
 docker-compose build
 # Ensure database has started before the application.
-docker-compose up -d db 
+docker-compose up -d db
+docker-compose up -d app
 # Initialize the newly created database.
-docker-compose run --no-deps --rm app flask create_db
-# Start the application.
-docker-compose run app
+docker-compose exec app flask create_db
+# Populate database with dummy data
+docker-compose exec app flask populate_db
 ```
 
 ## Testing
