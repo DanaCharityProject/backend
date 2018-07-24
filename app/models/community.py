@@ -31,7 +31,11 @@ class Community(db.Model):
 
     @classmethod
     def get_community_surrounding(cls, coordinates):
-        pass
+        return db.session.query(
+                Community, func.ST_AsGeoJSON(Community.boundaries)
+            ).filter(
+                func.ST_Contains(Community.boundaries, coordinates)
+            ).first()
 
     @classmethod
     def add_comunity(cls, community):

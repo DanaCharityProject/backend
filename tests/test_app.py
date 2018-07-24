@@ -622,6 +622,32 @@ def test_community_populate_db(client):
     boundaries = body[0]['boundaries']
     assert boundaries == expected_boundaries
 
+
+def test_community_query_community_containing(client):
+    community_id = 1
+    name = "Test community"
+    boundaries = WKTElement("MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))", 4326)
+    community = Community.add_comunity(Community.from_dict({
+        "id": community_id,
+        "name": name,
+        "boundaries":boundaries
+    }))
+
+    expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
+
+    assert community is not None
+
+    point = WKTElement("POINT({} {})".format(43.6439,-79.3740), 4326)
+    res = Community.get_community_surrounding(point)
+    
+    assert res is not None
+
+    print(res)
+    res_dict = json.loads(res[1])
+    print(res_dict)
+    assert res_dict['coordinates'] == expected_boundaries
+
+
 ### Extra functions ###
 
 def test_long_lat_to_point():
