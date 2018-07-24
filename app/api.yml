@@ -190,6 +190,39 @@ paths:
       responses:
         200:
           description: New community resource created.
+  "/community":
+    get:
+      tags: [community]
+      operationId: app.api.get_all_communities
+      summary: Returns all information on all communities.
+      responses:
+        200:
+          description: Community details.
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                  description: Unique community identifier.
+                name:
+                  type: string
+                  example: "Danforth"
+                  description: The name of a community.
+                boundaries:
+                  type: object
+                  properties:
+                    coordinates:
+                      type: array
+                      items:
+                        type: array
+                        example: [[[-79.464620648, 43.692155606]]]
+                    type:
+                      type: string
+                      example: "MultiPolygon"
+                  description: Boundaries of a community in GeoJson format.
 securityDefinitions:
   basic:
     type: basic
