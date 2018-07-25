@@ -5,12 +5,11 @@ from geopy.geocoders import Nominatim
 from .auth import auth, current_user, current_role
 from .models.user import User, InvalidUserInfo, USER_ROLE_ADMIN, USER_ROLE_USER
 from .models.community_resource import CommunityResource, NoExistingCommunityResource, InvalidCommunityResourceInfo
+from .models.community import Community
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 from sqlalchemy import func
 
 import sys
-
-
 
 @auth.login_required
 def get_user():
@@ -109,3 +108,20 @@ def put_communityresource(community_resource_id, body):
     except InvalidCommunityResourceInfo:
         return NoContent, 400
     return NoContent, 200
+
+
+def get_all_communities():
+    return [{
+        "id": community.id,
+        "name": community.name,
+        "boundaries": json.loads(boundaries)
+    } for (community, boundaries) in Community.get_all_communities()]
+
+
+def get_community_surrounding(coordinates):
+    res = Community.get_community_surrounding([float(s) for s in coordinates.split(',')])
+    return {
+        "id": res[0].id,
+        "name": res[0].name,
+        "boundaries": res[1]
+    }

@@ -2,6 +2,7 @@ import os
 
 from app import create_app, db
 from app.models.community_resource import CommunityResource
+from app.models.community import Community
 from app.models.user import User
 from tests import CommunityResourceFactory
 from geoalchemy2 import WKTElement
@@ -31,3 +32,4 @@ def populate_db():
     """Populate database with default data.
     """
     CommunityResource.populate_db()
+    Community.populate_db()

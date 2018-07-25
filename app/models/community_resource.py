@@ -128,8 +128,8 @@ class CommunityResource(db.Model):
         return resource
 
     @staticmethod
-    def long_lat_to_point(longitutde, latitude):
-        pointString = "POINT({} {})".format(longitutde, latitude)
+    def long_lat_to_point(longitude, latitude):
+        pointString = "POINT({} {})".format(longitude, latitude)
         return WKTElement(pointString, 4326)
     
     @staticmethod
