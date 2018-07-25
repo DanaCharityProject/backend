@@ -34,7 +34,7 @@ class Community(db.Model):
         return db.session.query(
                 Community, func.ST_AsGeoJSON(Community.boundaries)
             ).filter(
-                func.ST_Contains(Community.boundaries, coordinates)
+                func.ST_Contains(Community.boundaries, Community._array_to_point(coordinates))
             ).first()
 
     @classmethod
@@ -67,4 +67,8 @@ class Community(db.Model):
                     "name": shapeRecord.record[field_dict['AREA_NAME']],
                     "boundaries": WKTElement(str(pygeoif.MultiPolygon(pygeoif.as_shape(shapeRecord.shape.__geo_interface__))), 4326)
                     }))
+    
+    @staticmethod
+    def _array_to_point(arr):
+        return WKTElement("POINT({} {})".format(arr[0], arr[1]), 4326)
 

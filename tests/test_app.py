@@ -633,20 +633,19 @@ def test_community_query_community_containing(client):
         "boundaries":boundaries
     }))
 
-    expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
-
     assert community is not None
 
-    point = WKTElement("POINT({} {})".format(43.6439,-79.3740), 4326)
-    res = Community.get_community_surrounding(point)
-    
-    assert res is not None
+    point_lat = 43.6439
+    point_long = -79.3740
+    expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
 
-    print(res)
-    res_dict = json.loads(res[1])
-    print(res_dict)
-    assert res_dict['coordinates'] == expected_boundaries
-
+    rv = client.get("/community/{},{}".format(point_lat, point_long), headers=get_headers())
+    assert rv.status_code == 200
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert body['id'] == community_id
+    assert body['name'] == name
+    assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
 
 ### Extra functions ###
 

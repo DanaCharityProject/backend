@@ -116,4 +116,12 @@ def get_all_communities():
         "name": community.name,
         "boundaries": json.loads(boundaries)
     } for (community, boundaries) in Community.get_all_communities()]
-    
+
+
+def get_community_surrounding(coordinates):
+    res = Community.get_community_surrounding([float(s) for s in coordinates.split(',')])
+    return {
+        "id": res[0].id,
+        "name": res[0].name,
+        "boundaries": res[1]
+    }
