@@ -322,7 +322,7 @@ def test_get_community_resource_info(client):
 def test_populate_db(client):
     CommunityResource.populate_db()
     # pulled from parsed shapefile
-    expected = {'index': 55, 'name': 'YMCA House', 'shape': 'POINT (-79.39800551 43.64818818)'}
+    expected = {'index': 55, 'name': 'YMCA House', 'shape': 'POINT (43.64818818 -79.39800551)'}
 
     rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=55, headers=get_headers()))
     assert rv.status_code == 200

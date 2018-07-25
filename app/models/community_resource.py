@@ -177,11 +177,13 @@ class CommunityResource(db.Model):
                 field_dict[field[0]] = sf.fields.index(field) - 1
 
             for shapeRecord in sf.shapeRecords():
+                reversed = (shapeRecord.shape.__geo_interface__['coordinates'][1], shapeRecord.shape.__geo_interface__['coordinates'][0])
+                coordinates = pygeoif.Point(pygeoif.geometry.as_shape({'type':'Point', 'coordinates': reversed}))
                 CommunityResource.add_community_resource(CommunityResource.from_dict({
                     "community_resource_id": shapeRecord.record[field_dict['OBJECTID']],
                     "charity_number": shapeRecord.record[field_dict['OBJECTID']],
                     "name": shapeRecord.record[field_dict['NAME']],
-                    "coordinates": WKTElement(str(pygeoif.Point(pygeoif.as_shape(shapeRecord.shape.__geo_interface__))), 4326),
+                    "coordinates": WKTElement(str(pygeoif.Point(pygeoif.as_shape(coordinates))), 4326),
                     "contact_name":"",
                     "email":"",
                     "phone_number":"",
