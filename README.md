@@ -1,6 +1,7 @@
 # Dana Backend
 
 [![Build Status](https://travis-ci.org/DanaCharityProject/backend.svg?branch=AndreiAndMarco)](https://travis-ci.org/DanaCharityProject/backend)
+[![Documentation Status](https://readthedocs.org/projects/dana-project-backend-api/badge/?version=latest)](https://dana-project-backend-api.readthedocs.io/en/latest/?badge=latest)
 
 ## Setup
 
