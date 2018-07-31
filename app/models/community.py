@@ -64,10 +64,28 @@ class Community(db.Model):
             for shapeRecord in sf.shapeRecords():
                 Community.add_comunity(Community.from_dict({
                     "id": shapeRecord.record[field_dict['AREA_S_CD']],
-                    "name": shapeRecord.record[field_dict['AREA_NAME']],
-                    "boundaries": WKTElement(str(pygeoif.MultiPolygon(pygeoif.as_shape(shapeRecord.shape.__geo_interface__))), 4326)
+                    "name": ' '.join(shapeRecord.record[field_dict['AREA_NAME']].split(' ')[:-1]),
+                    "boundaries": WKTElement(str(pygeoif.MultiPolygon(pygeoif.as_shape(Community._longlat_to_latlong(shapeRecord.shape.__geo_interface__)))), 4326)
                     }))
     
+    @staticmethod
+    def _longlat_to_latlong(geojson):
+        coordinates = geojson['coordinates']
+        new_coordinates = ()
+
+        for polygon in coordinates:
+            new_polygon = (())
+            for point in polygon:
+                new_point = (point[1], point[0])
+                new_polygon += (new_point),
+            
+            new_coordinates += (new_polygon),
+
+        return {
+            'type': 'Polygon',
+            'coordinates': new_coordinates
+        }
+
     @staticmethod
     def _array_to_point(arr):
         return WKTElement("POINT({} {})".format(arr[0], arr[1]), 4326)
