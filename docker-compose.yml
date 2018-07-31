@@ -1,9 +1,10 @@
-version: "2"
+version: "2.3"
 services:
   app:
     build: .
     volumes: 
       - .:/code
+      - ./db_info:/db_info
     ports:
       - 5000:5000
     depends_on:

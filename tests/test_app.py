@@ -2,11 +2,13 @@ import base64
 import json
 
 import pytest
+import pygeoif
 
 from app import create_app, db
 import app.models as models
 from app.models.user import User
 from app.models.community_resource import CommunityResource
+from app.models.community import Community
 from geoalchemy2.elements import WKTElement
 
 import random
@@ -276,7 +278,7 @@ def test_get_communityresource_list(client):
 
     assert rv.status_code == 200
     assert len(body) == 2
-    assert body[0][0] == 1 and body[1][0] == 3
+    assert body[0]['community_resource_id'] == 1 and body[1]['community_resource_id'] == 3
 
 
 def test_get_community_resource_info(client):
@@ -315,7 +317,55 @@ def test_get_community_resource_info(client):
     assert SRID+"POINT({} {})".format(coordinate_result["coordinates"][0],coordinate_result["coordinates"][1]) == coordinates
 
     rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=2, headers=get_headers()))
-    assert rv.status_code == 500
+    assert rv.status_code == 404
+
+
+def test_community_resource_populate_db(client):
+    CommunityResource.populate_db()
+    # pulled from parsed shapefile
+    expected = {'index': 55, 'name': 'YMCA House', 'shape': 'POINT (43.64818818 -79.39800551)'}
+
+    rv = client.get("/communityresource/{community_resource_id}".format(community_resource_id=55, headers=get_headers()))
+    assert rv.status_code == 200
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert body['name'] == expected['name']
+    coordinates = json.loads(body['coordinates'][0])['coordinates']
+    assert 'POINT ({} {})'.format(coordinates[0], coordinates[1]) == expected['shape']
+
+
+def test_point_in_polygon(client):
+    SRID = "SRID=4326;"
+
+    charity_number = "1000"
+    email = "foo123@mail.com"
+    phone_number = "4161234567"
+    name = "The Mission"
+    contact_name = "John Smith"
+    address = "1 Yonge Street"
+    coordinates = SRID + "POINT(43.643205 -79.374143)"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "coordinates": coordinates,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+
+    assert community_resource is not None
+    assert CommunityResource.get_community_resource_by_id(1) is not None
+
+    # returns list of tuple: [(CommunityResource, geoJSON)]
+    res = CommunityResource.find_resources_inside_shape()
+    assert len(res) == 1
+    assert res[0][0].name == name
 
 # TODO: cases for invalid website and image_uri
 '''
@@ -532,6 +582,73 @@ def test_post_community_resource_info(client):
     # assert rv.status_code == 500
 
 
+def test_get_all_communities(client):
+    community_id = 1
+    name = "Test community"
+    boundaries = WKTElement("MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))", 4326)
+    expected_boundaries = {'coordinates': [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]], 'type': 'MultiPolygon'}
+    community = Community.add_comunity(Community.from_dict({
+        "id": community_id,
+        "name": name,
+        "boundaries":boundaries
+    }))
+
+    assert community is not None
+    assert Community.get_all_communities is not None
+
+    # user details with correct auth
+    rv = client.get("/community", headers=get_headers())
+    body = json.loads(rv.get_data(as_text=True))
+    assert rv.status_code == 200
+    assert body[0]["id"] == community_id
+    assert body[0]["name"] == name
+    print(body[0]["boundaries"])
+    assert body[0]["boundaries"] == expected_boundaries
+
+
+def test_community_populate_db(client):
+    Community.populate_db()
+    # pulled from parsed shapefile
+    expected_id = 97
+    expected_name = 'Yonge-St.Clair (97)'
+    expected_boundaries = {'type': 'MultiPolygon', 'coordinates': [[[[-79.391194827, 43.681081124], [-79.391405432, 43.680969554], [-79.393223778, 43.68016564], [-79.395808832, 43.67897994], [-79.39734939, 43.678274813], [-79.397456054, 43.678225407], [-79.397563898, 43.678167002], [-79.397671319, 43.678117597], [-79.397779545, 43.678068202], [-79.397888536, 43.678014289], [-79.397931367, 43.67799496], [-79.397944053, 43.678026295], [-79.398012159, 43.678203874], [-79.398140901, 43.678530736], [-79.39835151, 43.679039165], [-79.398562968, 43.679554271], [-79.398733166, 43.679962231], [-79.39893948, 43.680460422], [-79.399065448, 43.680766541], [-79.399215419, 43.681127631], [-79.399803535, 43.682543482], [-79.400168894, 43.683415978], [-79.400209291, 43.683526704], [-79.400530362, 43.684309799], [-79.400841057, 43.685027249], [-79.40112639, 43.685716067], [-79.401495486, 43.686640698], [-79.402338541, 43.688721201], [-79.403084698, 43.690632725], [-79.403084595, 43.69068726], [-79.40306224, 43.690739752], [-79.403017635, 43.690782127], [-79.401858246, 43.690989071], [-79.401758471, 43.691018509], [-79.401694884, 43.691039868], [-79.401586377, 43.691075806], [-79.401475066, 43.691059555], [-79.400869288, 43.691197554], [-79.401046406, 43.691647493], [-79.401129155, 43.691756401], [-79.401284819, 43.692098259], [-79.401589348, 43.692923003], [-79.401895134, 43.693727159], [-79.402191292, 43.694575291], [-79.402323138, 43.694891641], [-79.402372873, 43.695111837], [-79.402403564, 43.695494538], [-79.403094469, 43.695349317], [-79.403506916, 43.695259526], [-79.404674309, 43.695019966], [-79.405052346, 43.695978147], [-79.405281498, 43.696553361], [-79.405412512, 43.696951675], [-79.405611741, 43.697479664], [-79.405883211, 43.698180489], [-79.405661289, 43.698018991], [-79.405471175, 43.697963262], [-79.404605213, 43.697686571], [-79.403203304, 43.697269527], [-79.40312408, 43.697261791], [-79.402963269, 43.697149125], [-79.402769041, 43.697126386], [-79.402584239, 43.697074482], [-79.402277968, 43.696997568], [-79.401668084, 43.696834151], [-79.401266766, 43.696730327], [-79.400089966, 43.696390928], [-79.398961414, 43.696096816], [-79.398039911, 43.695845162], [-79.397199651, 43.695652603], [-79.396884534, 43.695603138], [-79.396105325, 43.695658887], [-79.395379674, 43.692273296], [-79.395342183, 43.692098523], [-79.395170311, 43.691261324], [-79.39506256, 43.690784199], [-79.394936396, 43.690199042], [-79.394891382, 43.690000974], [-79.394821305, 43.689735385], [-79.394603411, 43.689217051], [-79.394567687, 43.689132066], [-79.394141978, 43.688083036], [-79.393705219, 43.687133004], [-79.393331962, 43.68623254], [-79.393185671, 43.685881365], [-79.392854227, 43.685025923], [-79.392384472, 43.683940867], [-79.392032918, 43.683101241], [-79.391939056, 43.682874946], [-79.391630762, 43.682148949], [-79.391555118, 43.681973354], [-79.391340234, 43.681431807], [-79.391194827, 43.681081124]]]]}
+
+    rv = client.get("/community", headers=get_headers())
+    assert rv.status_code == 200
+    body = json.loads(rv.get_data(as_text=True))
+    print(body[0])
+    assert body[0]['id'] == expected_id
+    assert body[0]['name'] == expected_name
+    boundaries = body[0]['boundaries']
+    assert boundaries == expected_boundaries
+
+
+def test_community_query_community_containing(client):
+    community_id = 1
+    name = "Test community"
+    boundaries = WKTElement("MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))", 4326)
+    community = Community.add_comunity(Community.from_dict({
+        "id": community_id,
+        "name": name,
+        "boundaries":boundaries
+    }))
+
+    assert community is not None
+
+    point_lat = 43.6439
+    point_long = -79.3740
+    expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
+
+    rv = client.get("/community/{},{}".format(point_lat, point_long), headers=get_headers())
+    assert rv.status_code == 200
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert body['id'] == community_id
+    assert body['name'] == name
+    assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
+
+### Extra functions ###
+
 def test_long_lat_to_point():
     for i in range(5):
         test_long = random.uniform(-180, 180)
@@ -542,4 +659,3 @@ def test_long_lat_to_point():
         print("Response: ", str(res))
         print("Expected: ", str(expected))
         assert str(res) == str(expected)
- 

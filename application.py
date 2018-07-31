@@ -2,8 +2,10 @@ import os
 
 from app import create_app, db
 from app.models.community_resource import CommunityResource
+from app.models.community import Community
 from app.models.user import User
 from tests import CommunityResourceFactory
+from geoalchemy2 import WKTElement
 
 # Expose flask application from inside connexion.
 application = create_app(os.environ.get("DANA_CONFIG", "development")).app
@@ -29,16 +31,5 @@ def drop_db():
 def populate_db():
     """Populate database with default data.
     """
-    User.add_user(User.from_dict({
-        "email": "dev@danaproject.org",
-        "password": "dev"
-    }))
-
-    CommunityResource.add_community_resource(CommunityResourceFactory())
-    CommunityResource.add_community_resource(CommunityResourceFactory())
-    CommunityResource.add_community_resource(CommunityResourceFactory())
-    CommunityResource.add_community_resource(CommunityResourceFactory())
-    CommunityResource.add_community_resource(CommunityResourceFactory())
-
-    
-
+    CommunityResource.populate_db()
+    Community.populate_db()

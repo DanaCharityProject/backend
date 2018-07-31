@@ -1,3 +1,7 @@
+import os
+import shapefile
+import pygeoif
+
 from .. import db
 from ..validators import is_valid_username, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 from geopy.geocoders import Nominatim
@@ -63,20 +67,27 @@ class CommunityResource(db.Model):
         return community_resource_geo_json
 
     @classmethod
-    def get_community_resource_by_charity_number(charity_number):
+    def get_community_resource_by_charity_number(cls, charity_number):
         return cls.query.filter_by(charity_number=charity_number).first()
 
-    @staticmethod
-    def add_community_resource(resource):
-        db.session.add(resource)
-        db.session.commit()
+    @classmethod
+    def add_community_resource(cls, resource):
+        if not cls.query.filter_by(community_resource_id=resource.community_resource_id).first():
+            # This means there's an existing entry for this id and we shouldn't enter the same one
+            # TODO: maybe update the existing entry?
+            db.session.add(resource)
+            db.session.commit()
 
         return resource
 
     # Returns a list of resources within a given radius of latitude, longitude
     @classmethod
     def get_resources_by_radius(cls, longitude, latitude, radius):
-        return db.session.query(CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)).filter(func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)).all()
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)
+            ).all()
 
     @staticmethod
     def coordinates_from_address(address):
@@ -84,7 +95,6 @@ class CommunityResource(db.Model):
         location = geolocator.geocode(address)
 
         return CommunityResource.long_lat_to_point(location.longitude, location.latitude)
-
 
     @classmethod
     def edit_community_resource(cls, community_resource_id, new_name, new_lat, new_long, new_contact_name, new_email, new_phone_number, new_address, new_website, new_image_uri):
@@ -118,9 +128,70 @@ class CommunityResource(db.Model):
         return resource
 
     @staticmethod
-    def long_lat_to_point(longitutde, latitude):
-        pointString = "POINT({} {})".format(longitutde, latitude)
+    def long_lat_to_point(longitude, latitude):
+        pointString = "POINT({} {})".format(longitude, latitude)
         return WKTElement(pointString, 4326)
+    
+    @staticmethod
+    def find_resources_inside_shape():
+        # polygon surrounds 1 yonge street coordinates
+        polygonString = "MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))"
+        polygon = WKTElement(polygonString, 4326)
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_Contains(polygon, CommunityResource.coordinates)
+            ).all()
+    
+    @staticmethod
+    def populate_db():
+        """Populate database with default data.
+        """
+        # User.add_user(User.from_dict({
+        #     "email": "dev@danaproject.org",
+        #     "password": "dev"
+        # }))
+
+        # Below was producing duplicate community_resource_id error
+
+        # CommunityResource.add_community_resource(CommunityResourceFactory())
+        # CommunityResource.add_community_resource(CommunityResourceFactory())
+        # CommunityResource.add_community_resource(CommunityResourceFactory())
+        # CommunityResource.add_community_resource(CommunityResourceFactory())
+        # CommunityResource.add_community_resource(CommunityResourceFactory())
+
+        # Shelters
+        CommunityResource._parse_shapefile_and_populate_db("/db_info/shelters/shelters_wgs84.shp")
+        CommunityResource._parse_shapefile_and_populate_db("/db_info/dropins/TDIN_wgs84.shp")
+
+    @staticmethod
+    def _parse_shapefile_and_populate_db(file_path):
+        if not os.path.exists(file_path):
+            print(file_path + " does not exist")
+        else:
+            sf = shapefile.Reader(file_path)
+
+            # Create a dict of {<field>: <index>}
+            field_dict = {}
+            for field in sf.fields:
+                field_dict[field[0]] = sf.fields.index(field) - 1
+
+            for shapeRecord in sf.shapeRecords():
+                reversed = (shapeRecord.shape.__geo_interface__['coordinates'][1], shapeRecord.shape.__geo_interface__['coordinates'][0])
+                coordinates = pygeoif.Point(pygeoif.geometry.as_shape({'type':'Point', 'coordinates': reversed}))
+                CommunityResource.add_community_resource(CommunityResource.from_dict({
+                    "community_resource_id": shapeRecord.record[field_dict['OBJECTID']],
+                    "charity_number": shapeRecord.record[field_dict['OBJECTID']],
+                    "name": shapeRecord.record[field_dict['NAME']],
+                    "coordinates": WKTElement(str(pygeoif.Point(pygeoif.as_shape(coordinates))), 4326),
+                    "contact_name":"",
+                    "email":"",
+                    "phone_number":"",
+                    "address":"",
+                    "website":"",
+                    "image_uri":"",
+                    "verified": True
+                    }))
 
 
 class NoExistingCommunityResource(Exception):
