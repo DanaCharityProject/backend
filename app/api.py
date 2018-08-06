@@ -55,6 +55,13 @@ def get_communityresource_list(longitude, latitude, radius):
         "location": json.loads(location)
     } for (community_resource, location) in CommunityResource.get_resources_by_radius(longitude=longitude, latitude=latitude, radius=radius)]
 
+def get_communityresource_in_shape(polygon_string):
+    return [{
+        "community_resource_id": community_resource.community_resource_id,
+        "name": community_resource.name,
+        "address": community_resource.address,
+        "location": json.loads(location)
+    } for (community_resource, location) in CommunityResource.get_resources_in_shape(polygon_string)]
 
 @auth.login_required
 def post_communityresource(body):

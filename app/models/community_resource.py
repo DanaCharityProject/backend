@@ -88,6 +88,15 @@ class CommunityResource(db.Model):
             ).filter(
                 func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)
             ).all()
+    
+    @classmethod
+    def get_resources_in_shape(cls, polygon_string):
+        polygon = WKTElement(polygon_string, 4326)
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_Contains(polygon, CommunityResource.coordinates)
+            ).all()
 
     @staticmethod
     def coordinates_from_address(address):
@@ -131,17 +140,6 @@ class CommunityResource(db.Model):
     def long_lat_to_point(longitude, latitude):
         pointString = "POINT({} {})".format(longitude, latitude)
         return WKTElement(pointString, 4326)
-    
-    @staticmethod
-    def find_resources_inside_shape():
-        # polygon surrounds 1 yonge street coordinates
-        polygonString = "MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))"
-        polygon = WKTElement(polygonString, 4326)
-        return db.session.query(
-                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
-            ).filter(
-                func.ST_Contains(polygon, CommunityResource.coordinates)
-            ).all()
     
     @staticmethod
     def populate_db():

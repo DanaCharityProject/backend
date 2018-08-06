@@ -281,6 +281,66 @@ def test_get_communityresource_list(client):
     assert body[0]['community_resource_id'] == 1 and body[1]['community_resource_id'] == 3
 
 
+def test_get_communityresource_in_shape(client):
+    SRID = "SRID=4326;"
+
+    charity_number = "1"
+    email = "foo123@mail.com"
+    phone_number = "1234567899"
+    name = "Bahen Centre for Information Technology"
+    contact_name = "John Smith"
+    address = "40 St George St"
+    coordinates = SRID + "POINT(43.659752 -79.397678)"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "coordinates": coordinates,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+    
+    charity_number2 = "2"
+    email2 = "baz123@mail.com"
+    phone_number2 = "9876543211"
+    name2 = "University of Toronto Bookstore"
+    contact_name2 = "Jane Doe"
+    address2 = "214 College St"
+    coordinates2 = SRID + "POINT(43.658849 -79.397205)"
+    website2 = "www.test2.com"
+    image_uri2 = "http://www.google.com/image2.png"
+
+    community_resource2 = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number2,
+        "name": name2,
+        "address": address2,
+        "coordinates": coordinates2,
+        "contact_name": contact_name2,
+        "email": email2,
+        "phone_number": phone_number2,
+        "website": website2,
+        "image_uri": image_uri2
+    }))
+
+    assert community_resource is not None
+    assert community_resource2 is not None
+    
+    polygon_string = "POLYGON((43.660160 -79.398425,43.660360 -79.395625,43.658218 -79.395417,43.658514 -79.398372,43.660160 -79.398425))"
+    rv = client.get("/communityresource/{polygon_string}".format(polygon_string=polygon_string), headers=get_headers())
+
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert rv.status_code == 200
+    assert len(body) == 2
+    assert body[0]['community_resource_id'] == 1
+    assert body[1]['community_resource_id'] == 2
+
 def test_get_community_resource_info(client):
     SRID = "SRID=4326;"
 
@@ -333,39 +393,6 @@ def test_community_resource_populate_db(client):
     coordinates = json.loads(body['coordinates'][0])['coordinates']
     assert 'POINT ({} {})'.format(coordinates[0], coordinates[1]) == expected['shape']
 
-
-def test_point_in_polygon(client):
-    SRID = "SRID=4326;"
-
-    charity_number = "1000"
-    email = "foo123@mail.com"
-    phone_number = "4161234567"
-    name = "The Mission"
-    contact_name = "John Smith"
-    address = "1 Yonge Street"
-    coordinates = SRID + "POINT(43.643205 -79.374143)"
-    website = "www.test.com"
-    image_uri = "http://www.google.com/image.png"
-
-    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
-        "charity_number": charity_number,
-        "name": name,
-        "address": address,
-        "coordinates": coordinates,
-        "contact_name": contact_name,
-        "email": email,
-        "phone_number": phone_number,
-        "website": website,
-        "image_uri": image_uri
-    }))
-
-    assert community_resource is not None
-    assert CommunityResource.get_community_resource_by_id(1) is not None
-
-    # returns list of tuple: [(CommunityResource, geoJSON)]
-    res = CommunityResource.find_resources_inside_shape()
-    assert len(res) == 1
-    assert res[0][0].name == name
 
 # TODO: cases for invalid website and image_uri
 '''
@@ -652,7 +679,7 @@ def test_community_query_community_containing(client):
 ### Extra functions ###
 
 def test_long_lat_to_point():
-    for i in range(5):
+    for _ in range(5):
         test_long = random.uniform(-180, 180)
         test_lat = random.uniform(-90, 90)
         res = CommunityResource.long_lat_to_point(test_long, test_lat)
