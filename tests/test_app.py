@@ -645,6 +645,10 @@ def test_community_query_community_containing(client):
     assert body['name'] == name
     assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
 
+    rv = client.get("/community/{},{}".format(43, 79), headers=get_headers())
+    assert rv.status_code ==  200
+    assert rv.get_data(as_text=True) is ''
+
 ### Extra functions ###
 
 def test_long_lat_to_point():
