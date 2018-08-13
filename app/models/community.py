@@ -39,9 +39,14 @@ class Community(db.Model):
 
     @classmethod
     def add_comunity(cls, community):
-        db.session.add(community)
-        db.session.commit()
+        existing_community = cls.query.filter_by(id=community.id).first()
 
+        if existing_community is None:
+            db.session.add(community)
+        else:
+            existing_community = community
+
+        db.session.commit()
         return community
 
     @staticmethod

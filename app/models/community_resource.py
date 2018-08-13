@@ -72,12 +72,14 @@ class CommunityResource(db.Model):
 
     @classmethod
     def add_community_resource(cls, resource):
-        if not cls.query.filter_by(community_resource_id=resource.community_resource_id).first():
-            # This means there's an existing entry for this id and we shouldn't enter the same one
-            # TODO: maybe update the existing entry?
-            db.session.add(resource)
-            db.session.commit()
+        existing_resource = cls.query.filter_by(community_resource_id=resource.community_resource_id).first()
 
+        if existing_resource is None:
+            db.session.add(resource)
+        else:
+            existing_resource = resource
+
+        db.session.commit()
         return resource
 
     # Returns a list of resources within a given radius of latitude, longitude
@@ -145,20 +147,6 @@ class CommunityResource(db.Model):
     def populate_db():
         """Populate database with default data.
         """
-        # User.add_user(User.from_dict({
-        #     "email": "dev@danaproject.org",
-        #     "password": "dev"
-        # }))
-
-        # Below was producing duplicate community_resource_id error
-
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-
-        # Shelters
         CommunityResource._parse_shapefile_and_populate_db("/db_info/shelters/shelters_wgs84.shp")
         CommunityResource._parse_shapefile_and_populate_db("/db_info/dropins/TDIN_wgs84.shp")
 
