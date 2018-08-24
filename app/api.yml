@@ -123,6 +123,49 @@ paths:
                 description: Timed JSON web token which can be used for authentication in place of email/password.
       security:
         - basic: []
+  "/communityresource/{polygon_string}":
+    get:
+      tags: [communityresource]
+      operationId: app.api.get_communityresource_in_shape
+      summary: Returns community resources in a given geographic polygon.
+      parameters:
+        - name: polygon_string
+          in: path
+          type: string
+          required: true
+          description: the string representation of a polygon
+      responses:
+        200:
+          description: List of community resources within the given polygon
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                community_resource_id:
+                  type: number
+                  description: Unique community resource identifier.
+                name:
+                  type: string
+                  description: Name of the community resource.
+                  example: Scott's Mission
+                address:
+                  type: string
+                  description: Address of the community resource.
+                  example: 123 Yonge St. Toronto, On
+                location:
+                  type: object
+                  properties:
+                    coordinates:
+                      type: array
+                      items:
+                        type: number
+                        example: [43.70273, -79.3977]
+                    type:
+                      type: string
+                      example: "Point"
+                  description: |
+                    Location of the community resource as a GeoJson point.
   "/communityresource":
     get:
       tags: [communityresource]

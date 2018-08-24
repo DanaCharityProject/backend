@@ -281,6 +281,66 @@ def test_get_communityresource_list(client):
     assert body[0]['community_resource_id'] == 1 and body[1]['community_resource_id'] == 3
 
 
+def test_get_communityresource_in_shape(client):
+    SRID = "SRID=4326;"
+
+    charity_number = "1"
+    email = "foo123@mail.com"
+    phone_number = "1234567899"
+    name = "Bahen Centre for Information Technology"
+    contact_name = "John Smith"
+    address = "40 St George St"
+    coordinates = SRID + "POINT(43.659752 -79.397678)"
+    website = "www.test.com"
+    image_uri = "http://www.google.com/image.png"
+
+    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number,
+        "name": name,
+        "address": address,
+        "coordinates": coordinates,
+        "contact_name": contact_name,
+        "email": email,
+        "phone_number": phone_number,
+        "website": website,
+        "image_uri": image_uri
+    }))
+    
+    charity_number2 = "2"
+    email2 = "baz123@mail.com"
+    phone_number2 = "9876543211"
+    name2 = "University of Toronto Bookstore"
+    contact_name2 = "Jane Doe"
+    address2 = "214 College St"
+    coordinates2 = SRID + "POINT(43.658849 -79.397205)"
+    website2 = "www.test2.com"
+    image_uri2 = "http://www.google.com/image2.png"
+
+    community_resource2 = CommunityResource.add_community_resource(CommunityResource.from_dict({
+        "charity_number": charity_number2,
+        "name": name2,
+        "address": address2,
+        "coordinates": coordinates2,
+        "contact_name": contact_name2,
+        "email": email2,
+        "phone_number": phone_number2,
+        "website": website2,
+        "image_uri": image_uri2
+    }))
+
+    assert community_resource is not None
+    assert community_resource2 is not None
+    
+    polygon_string = "POLYGON((43.660160 -79.398425,43.660360 -79.395625,43.658218 -79.395417,43.658514 -79.398372,43.660160 -79.398425))"
+    rv = client.get("/communityresource/{polygon_string}".format(polygon_string=polygon_string), headers=get_headers())
+
+    body = json.loads(rv.get_data(as_text=True))
+    print(body)
+    assert rv.status_code == 200
+    assert len(body) == 2
+    assert body[0]['community_resource_id'] == 1
+    assert body[1]['community_resource_id'] == 2
+
 def test_get_community_resource_info(client):
     SRID = "SRID=4326;"
 
@@ -333,39 +393,6 @@ def test_community_resource_populate_db(client):
     coordinates = json.loads(body['coordinates'][0])['coordinates']
     assert 'POINT ({} {})'.format(coordinates[0], coordinates[1]) == expected['shape']
 
-
-def test_point_in_polygon(client):
-    SRID = "SRID=4326;"
-
-    charity_number = "1000"
-    email = "foo123@mail.com"
-    phone_number = "4161234567"
-    name = "The Mission"
-    contact_name = "John Smith"
-    address = "1 Yonge Street"
-    coordinates = SRID + "POINT(43.643205 -79.374143)"
-    website = "www.test.com"
-    image_uri = "http://www.google.com/image.png"
-
-    community_resource = CommunityResource.add_community_resource(CommunityResource.from_dict({
-        "charity_number": charity_number,
-        "name": name,
-        "address": address,
-        "coordinates": coordinates,
-        "contact_name": contact_name,
-        "email": email,
-        "phone_number": phone_number,
-        "website": website,
-        "image_uri": image_uri
-    }))
-
-    assert community_resource is not None
-    assert CommunityResource.get_community_resource_by_id(1) is not None
-
-    # returns list of tuple: [(CommunityResource, geoJSON)]
-    res = CommunityResource.find_resources_inside_shape()
-    assert len(res) == 1
-    assert res[0][0].name == name
 
 # TODO: cases for invalid website and image_uri
 '''
@@ -610,13 +637,12 @@ def test_community_populate_db(client):
     Community.populate_db()
     # pulled from parsed shapefile
     expected_id = 97
-    expected_name = 'Yonge-St.Clair (97)'
-    expected_boundaries = {'type': 'MultiPolygon', 'coordinates': [[[[-79.391194827, 43.681081124], [-79.391405432, 43.680969554], [-79.393223778, 43.68016564], [-79.395808832, 43.67897994], [-79.39734939, 43.678274813], [-79.397456054, 43.678225407], [-79.397563898, 43.678167002], [-79.397671319, 43.678117597], [-79.397779545, 43.678068202], [-79.397888536, 43.678014289], [-79.397931367, 43.67799496], [-79.397944053, 43.678026295], [-79.398012159, 43.678203874], [-79.398140901, 43.678530736], [-79.39835151, 43.679039165], [-79.398562968, 43.679554271], [-79.398733166, 43.679962231], [-79.39893948, 43.680460422], [-79.399065448, 43.680766541], [-79.399215419, 43.681127631], [-79.399803535, 43.682543482], [-79.400168894, 43.683415978], [-79.400209291, 43.683526704], [-79.400530362, 43.684309799], [-79.400841057, 43.685027249], [-79.40112639, 43.685716067], [-79.401495486, 43.686640698], [-79.402338541, 43.688721201], [-79.403084698, 43.690632725], [-79.403084595, 43.69068726], [-79.40306224, 43.690739752], [-79.403017635, 43.690782127], [-79.401858246, 43.690989071], [-79.401758471, 43.691018509], [-79.401694884, 43.691039868], [-79.401586377, 43.691075806], [-79.401475066, 43.691059555], [-79.400869288, 43.691197554], [-79.401046406, 43.691647493], [-79.401129155, 43.691756401], [-79.401284819, 43.692098259], [-79.401589348, 43.692923003], [-79.401895134, 43.693727159], [-79.402191292, 43.694575291], [-79.402323138, 43.694891641], [-79.402372873, 43.695111837], [-79.402403564, 43.695494538], [-79.403094469, 43.695349317], [-79.403506916, 43.695259526], [-79.404674309, 43.695019966], [-79.405052346, 43.695978147], [-79.405281498, 43.696553361], [-79.405412512, 43.696951675], [-79.405611741, 43.697479664], [-79.405883211, 43.698180489], [-79.405661289, 43.698018991], [-79.405471175, 43.697963262], [-79.404605213, 43.697686571], [-79.403203304, 43.697269527], [-79.40312408, 43.697261791], [-79.402963269, 43.697149125], [-79.402769041, 43.697126386], [-79.402584239, 43.697074482], [-79.402277968, 43.696997568], [-79.401668084, 43.696834151], [-79.401266766, 43.696730327], [-79.400089966, 43.696390928], [-79.398961414, 43.696096816], [-79.398039911, 43.695845162], [-79.397199651, 43.695652603], [-79.396884534, 43.695603138], [-79.396105325, 43.695658887], [-79.395379674, 43.692273296], [-79.395342183, 43.692098523], [-79.395170311, 43.691261324], [-79.39506256, 43.690784199], [-79.394936396, 43.690199042], [-79.394891382, 43.690000974], [-79.394821305, 43.689735385], [-79.394603411, 43.689217051], [-79.394567687, 43.689132066], [-79.394141978, 43.688083036], [-79.393705219, 43.687133004], [-79.393331962, 43.68623254], [-79.393185671, 43.685881365], [-79.392854227, 43.685025923], [-79.392384472, 43.683940867], [-79.392032918, 43.683101241], [-79.391939056, 43.682874946], [-79.391630762, 43.682148949], [-79.391555118, 43.681973354], [-79.391340234, 43.681431807], [-79.391194827, 43.681081124]]]]}
+    expected_name = 'Yonge-St.Clair'
+    expected_boundaries = {'type': 'MultiPolygon', 'coordinates': [[[[43.681081124, -79.391194827], [43.680969554, -79.391405432], [43.68016564, -79.393223778], [43.67897994, -79.395808832], [43.678274813, -79.39734939], [43.678225407, -79.397456054], [43.678167002, -79.397563898], [43.678117597, -79.397671319], [43.678068202, -79.397779545], [43.678014289, -79.397888536], [43.67799496, -79.397931367], [43.678026295, -79.397944053], [43.678203874, -79.398012159], [43.678530736, -79.398140901], [43.679039165, -79.39835151], [43.679554271, -79.398562968], [43.679962231, -79.398733166], [43.680460422, -79.39893948], [43.680766541, -79.399065448], [43.681127631, -79.399215419], [43.682543482, -79.399803535], [43.683415978, -79.400168894], [43.683526704, -79.400209291], [43.684309799, -79.400530362], [43.685027249, -79.400841057], [43.685716067, -79.40112639], [43.686640698, -79.401495486], [43.688721201, -79.402338541], [43.690632725, -79.403084698], [43.69068726, -79.403084595], [43.690739752, -79.40306224], [43.690782127, -79.403017635], [43.690989071, -79.401858246], [43.691018509, -79.401758471], [43.691039868, -79.401694884], [43.691075806, -79.401586377], [43.691059555, -79.401475066], [43.691197554, -79.400869288], [43.691647493, -79.401046406], [43.691756401, -79.401129155], [43.692098259, -79.401284819], [43.692923003, -79.401589348], [43.693727159, -79.401895134], [43.694575291, -79.402191292], [43.694891641, -79.402323138], [43.695111837, -79.402372873], [43.695494538, -79.402403564], [43.695349317, -79.403094469], [43.695259526, -79.403506916], [43.695019966, -79.404674309], [43.695978147, -79.405052346], [43.696553361, -79.405281498], [43.696951675, -79.405412512], [43.697479664, -79.405611741], [43.698180489, -79.405883211], [43.698018991, -79.405661289], [43.697963262, -79.405471175], [43.697686571, -79.404605213], [43.697269527, -79.403203304], [43.697261791, -79.40312408], [43.697149125, -79.402963269], [43.697126386, -79.402769041], [43.697074482, -79.402584239], [43.696997568, -79.402277968], [43.696834151, -79.401668084], [43.696730327, -79.401266766], [43.696390928, -79.400089966], [43.696096816, -79.398961414], [43.695845162, -79.398039911], [43.695652603, -79.397199651], [43.695603138, -79.396884534], [43.695658887, -79.396105325], [43.692273296, -79.395379674], [43.692098523, -79.395342183], [43.691261324, -79.395170311], [43.690784199, -79.39506256], [43.690199042, -79.394936396], [43.690000974, -79.394891382], [43.689735385, -79.394821305], [43.689217051, -79.394603411], [43.689132066, -79.394567687], [43.688083036, -79.394141978], [43.687133004, -79.393705219], [43.68623254, -79.393331962], [43.685881365, -79.393185671], [43.685025923, -79.392854227], [43.683940867, -79.392384472], [43.683101241, -79.392032918], [43.682874946, -79.391939056], [43.682148949, -79.391630762], [43.681973354, -79.391555118], [43.681431807, -79.391340234], [43.681081124, -79.391194827]]]]}
 
     rv = client.get("/community", headers=get_headers())
     assert rv.status_code == 200
     body = json.loads(rv.get_data(as_text=True))
-    print(body[0])
     assert body[0]['id'] == expected_id
     assert body[0]['name'] == expected_name
     boundaries = body[0]['boundaries']
@@ -642,15 +668,18 @@ def test_community_query_community_containing(client):
     rv = client.get("/community/{},{}".format(point_lat, point_long), headers=get_headers())
     assert rv.status_code == 200
     body = json.loads(rv.get_data(as_text=True))
-    print(body)
     assert body['id'] == community_id
     assert body['name'] == name
     assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
 
+    rv = client.get("/community/{},{}".format(43, 79), headers=get_headers())
+    assert rv.status_code ==  200
+    assert rv.get_data(as_text=True) is ''
+
 ### Extra functions ###
 
 def test_long_lat_to_point():
-    for i in range(5):
+    for _ in range(5):
         test_long = random.uniform(-180, 180)
         test_lat = random.uniform(-90, 90)
         res = CommunityResource.long_lat_to_point(test_long, test_lat)

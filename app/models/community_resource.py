@@ -72,12 +72,14 @@ class CommunityResource(db.Model):
 
     @classmethod
     def add_community_resource(cls, resource):
-        if not cls.query.filter_by(community_resource_id=resource.community_resource_id).first():
-            # This means there's an existing entry for this id and we shouldn't enter the same one
-            # TODO: maybe update the existing entry?
-            db.session.add(resource)
-            db.session.commit()
+        existing_resource = cls.query.filter_by(community_resource_id=resource.community_resource_id).first()
 
+        if existing_resource is None:
+            db.session.add(resource)
+        else:
+            existing_resource = resource
+
+        db.session.commit()
         return resource
 
     # Returns a list of resources within a given radius of latitude, longitude
@@ -87,6 +89,15 @@ class CommunityResource(db.Model):
                 CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
             ).filter(
                 func.ST_DWITHIN(CommunityResource.coordinates, CommunityResource.long_lat_to_point(longitude, latitude), radius)
+            ).all()
+    
+    @classmethod
+    def get_resources_in_shape(cls, polygon_string):
+        polygon = WKTElement(polygon_string, 4326)
+        return db.session.query(
+                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
+            ).filter(
+                func.ST_Contains(polygon, CommunityResource.coordinates)
             ).all()
 
     @staticmethod
@@ -133,34 +144,9 @@ class CommunityResource(db.Model):
         return WKTElement(pointString, 4326)
     
     @staticmethod
-    def find_resources_inside_shape():
-        # polygon surrounds 1 yonge street coordinates
-        polygonString = "MULTIPOLYGON(((43.643911 -79.376321, 43.644268 -79.372738, 43.642071 -79.372620, 43.641993 -79.375881, 43.643911 -79.376321)))"
-        polygon = WKTElement(polygonString, 4326)
-        return db.session.query(
-                CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
-            ).filter(
-                func.ST_Contains(polygon, CommunityResource.coordinates)
-            ).all()
-    
-    @staticmethod
     def populate_db():
         """Populate database with default data.
         """
-        # User.add_user(User.from_dict({
-        #     "email": "dev@danaproject.org",
-        #     "password": "dev"
-        # }))
-
-        # Below was producing duplicate community_resource_id error
-
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-        # CommunityResource.add_community_resource(CommunityResourceFactory())
-
-        # Shelters
         CommunityResource._parse_shapefile_and_populate_db("/db_info/shelters/shelters_wgs84.shp")
         CommunityResource._parse_shapefile_and_populate_db("/db_info/dropins/TDIN_wgs84.shp")
 

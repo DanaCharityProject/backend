@@ -1,10 +1,13 @@
 from flask import current_app
-from itsdangerous import (TimedJSONWebSignatureSerializer
-                          as Serializer, BadSignature, SignatureExpired)
 from werkzeug.security import check_password_hash, generate_password_hash
 from ..validators import is_valid_username
+from jwt import InvalidTokenError, ExpiredSignatureError
 
 from .. import db
+
+import jwt
+import datetime
+
 
 USER_ROLE_USER = "user"
 USER_ROLE_ADMIN = "admin"
@@ -30,12 +33,13 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def generate_auth_token(self, expiration=600):
-        s = Serializer(current_app.config['SECRET_KEY'], expires_in=expiration)
+        token = {
+            'user_id': self.user_id,
+            'role': self.role,
+            'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=expiration)
+        }
 
-        return s.dumps({
-            "user_id": self.user_id,
-            "role": self.role
-        })
+        return jwt.encode(token, current_app.config['SECRET_KEY'], algorithm='HS256')
 
     @classmethod
     def verify_auth_token(cls, token):
@@ -47,14 +51,12 @@ class User(db.Model):
 
     @classmethod
     def get_user_by_token(cls, token):
-        s = Serializer(current_app.config['SECRET_KEY'])
-
         try:
-            data = s.loads(token)
+            data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
             return cls.query.get(data["user_id"])
-        except SignatureExpired:
+        except ExpiredSignatureError:
             return None    # valid token, but expired
-        except BadSignature:
+        except InvalidTokenError:
             return None    # invalid token
         except:
             return None
