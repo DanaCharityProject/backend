@@ -71,6 +71,7 @@ def test_get_user(client):
     body = json.loads(rv.get_data(as_text=True))
     assert rv.status_code == 200
     assert body["email"] == user.email
+    assert body["active"] == False
     # user details with correct auth but different case
     rv = client.get("/user", headers=get_headers(basic_auth=email.upper() + ":" + password))
     body = json.loads(rv.get_data(as_text=True))

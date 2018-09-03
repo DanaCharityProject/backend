@@ -20,6 +20,7 @@ class User(db.Model):
     email = db.Column(db.String(256), unique=True, nullable=False, index=True)
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    active = db.Column(db.Boolean, default=False, nullable=False)
 
     @property
     def password(self):
@@ -89,7 +90,8 @@ class User(db.Model):
         return {
             "user_id": self.user_id,
             "email": self.email,
-            "role": self.role
+            "role": self.role,
+            "active": self.active
         }
     
     @classmethod
