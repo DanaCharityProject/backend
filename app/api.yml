@@ -76,6 +76,30 @@ paths:
                 type: string
         409:
           description: Conflict exists, email taken.
+  "/user/activate":
+    get:
+      tags: [user]
+      operationId: app.api.get_user_activate
+      summary: Activate a user account
+      description: |
+        The User Activate endpoint activates the account matching the given token.
+      parameters:
+        - name: email_hash
+          in: query
+          description: |
+            The token retrieved from a registration email.
+          type: string
+          required: true
+      responses:
+        204:
+          description: Account activated.
+        404:
+          description: Token is valid but expired.
+        400:
+          description: Token is invalid.
+        500:
+          description: Unknown exception.
+
   "/user/password":
     put:
       tags: [user]

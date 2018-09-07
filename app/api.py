@@ -8,12 +8,27 @@ from .models.community_resource import CommunityResource, NoExistingCommunityRes
 from .models.community import Community
 from .validators import is_valid_password, is_valid_email, is_valid_phone_number, is_valid_community_resource_name
 from sqlalchemy import func
+from jwt import InvalidTokenError, ExpiredSignatureError
 
+import jwt
 import sys
 
 @auth.login_required
 def get_user():
     return current_user().to_dict()
+
+
+def get_user_activate(email_hash):
+    print('activate')
+    try:
+        if(User.activate_user(email_hash)):
+            return NoContent, 204
+    except ExpiredSignatureError:
+        return NoContent, 404    # valid token, but expired
+    except InvalidTokenError:
+        return NoContent, 400    # invalid token
+    except:
+        return NoContent, 500
 
 
 @auth.login_required
@@ -28,12 +43,15 @@ def put_user(body):
 
 
 def post_user(body):
-    user = User.add_user(User.from_dict(body))
+    user, email_hash = User.add_user(User.from_dict(body))
 
     if user is None:
         return NoContent, 409
 
-    return user.to_dict(), 201
+    response_dict = user.to_dict()
+    response_dict['activation_url'] = 'user/activate?email_hash=' + email_hash
+
+    return response_dict, 201
 
 
 @auth.login_required
@@ -44,7 +62,7 @@ def put_user_password(body):
 
 @auth.login_required
 def get_user_token():
-    return {"token": current_user().generate_auth_token().decode("ascii")}, 201
+    return {"token": current_user().generate_auth_token()}, 201
 
 
 def get_communityresource_list(longitude, latitude, radius):
