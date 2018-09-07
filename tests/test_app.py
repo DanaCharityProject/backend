@@ -122,9 +122,10 @@ def test_get_user_activation(client):
         "password": password
     }))
 
-    # generate token
     rv = client.get("/user/activate?email_hash={}".format(email_hash), headers=get_headers())
     assert rv.status_code == 204
+
+    assert User.get_user_by_email(email).active
 
     rv = client.get("/user/activate?email_hash={}".format('notahash'), headers=get_headers())
     assert rv.status_code == 400
