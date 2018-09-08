@@ -684,18 +684,19 @@ def test_community_query_community_containing(client):
 
     assert community is not None
 
+    # These are flipped IRL, but doesn't matter for the test
     point_lat = 43.6439
     point_long = -79.3740
     expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
 
-    rv = client.get("/community/{},{}".format(point_lat, point_long), headers=get_headers())
+    rv = client.get("/community/search?longitude={}&latitude={}".format(point_lat, point_long), headers=get_headers())
     assert rv.status_code == 200
     body = json.loads(rv.get_data(as_text=True))
     assert body['id'] == community_id
     assert body['name'] == name
     assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
 
-    rv = client.get("/community/{},{}".format(43, 79), headers=get_headers())
+    rv = client.get("/community/search?longitude={}&latitude={}".format(43, 79), headers=get_headers())
     assert rv.status_code ==  200
     assert rv.get_data(as_text=True) is ''
 

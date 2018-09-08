@@ -143,8 +143,8 @@ def get_all_communities():
     } for (community, boundaries) in Community.get_all_communities()]
 
 
-def get_community_surrounding(coordinates):
-    res = Community.get_community_surrounding([float(s) for s in coordinates.split(',')])
+def get_community_surrounding(longitude, latitude):
+    res = Community.get_community_surrounding(longitude, latitude)
     if res is None:
         return NoContent, 200
     else:

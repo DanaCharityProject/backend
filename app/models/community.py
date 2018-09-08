@@ -30,11 +30,13 @@ class Community(db.Model):
         return db.session.query(Community, func.ST_AsGeoJSON(Community.boundaries)).all()
 
     @classmethod
-    def get_community_surrounding(cls, coordinates):
+    def get_community_surrounding(cls, longitude, latitude):
         return db.session.query(
                 Community, func.ST_AsGeoJSON(Community.boundaries)
             ).filter(
-                func.ST_Contains(Community.boundaries, Community._array_to_point(coordinates))
+                func.ST_Contains(
+                    Community.boundaries, 
+                    WKTElement("POINT({} {})".format(longitude, latitude), 4326))
             ).first()
 
     @classmethod
@@ -90,8 +92,3 @@ class Community(db.Model):
             'type': 'Polygon',
             'coordinates': new_coordinates
         }
-
-    @staticmethod
-    def _array_to_point(arr):
-        return WKTElement("POINT({} {})".format(arr[0], arr[1]), 4326)
-

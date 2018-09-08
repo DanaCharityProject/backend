@@ -290,17 +290,22 @@ paths:
                       type: string
                       example: "MultiPolygon"
                   description: Boundaries of a community in GeoJson format.
-  "/community/{coordinates}":
+  "/community/search":
     get:
       tags: [community]
       operationId: app.api.get_community_surrounding
       summary: Returns the community containing the given set of coordinates.
       parameters:
-        - name: coordinates
-          in: path
-          required: true
+        - name: longitude
+          in: query
+          required: false
           type: string
-          description: Coordinates in longitude, latitude format.
+          description: longitude
+        - name: latitude
+          in: query
+          required: false
+          type: string
+          description: latitude
       responses:
         200:
           description: A community that surrounds the given coordinates.
