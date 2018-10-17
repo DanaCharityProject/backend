@@ -135,3 +135,17 @@ def get_community_surrounding(coordinates):
             "name": res[0].name,
             "boundaries": res[1]
         }, 200
+
+
+def get_donation_version():
+    pass
+
+
+def post_donation(name):
+    pass
+# def get_resource_by_radius(coordinates, radius):
+#     """
+#     cooridinates: the current position of where the user is.
+#     radius: the distance from which the user wants to see the resources around them.
+#     """
+    

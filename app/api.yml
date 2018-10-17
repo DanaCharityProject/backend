@@ -123,49 +123,6 @@ paths:
                 description: Timed JSON web token which can be used for authentication in place of email/password.
       security:
         - basic: []
-  "/communityresource/{polygon_string}":
-    get:
-      tags: [communityresource]
-      operationId: app.api.get_communityresource_in_shape
-      summary: Returns community resources in a given geographic polygon.
-      parameters:
-        - name: polygon_string
-          in: path
-          type: string
-          required: true
-          description: the string representation of a polygon
-      responses:
-        200:
-          description: List of community resources within the given polygon
-          schema:
-            type: array
-            items:
-              type: object
-              properties:
-                community_resource_id:
-                  type: number
-                  description: Unique community resource identifier.
-                name:
-                  type: string
-                  description: Name of the community resource.
-                  example: Scott's Mission
-                address:
-                  type: string
-                  description: Address of the community resource.
-                  example: 123 Yonge St. Toronto, On
-                location:
-                  type: object
-                  properties:
-                    coordinates:
-                      type: array
-                      items:
-                        type: number
-                        example: [43.70273, -79.3977]
-                    type:
-                      type: string
-                      example: "Point"
-                  description: |
-                    Location of the community resource as a GeoJson point.
   "/communityresource":
     get:
       tags: [communityresource]
@@ -187,6 +144,11 @@ paths:
           type: number
           required: true
           description: Radius (Km)
+        - name: polygon_string
+          in: query
+          type: string
+          required: true
+          description: the string representation of a polygon
       responses:
         200:
           description: Nearby community resource list JSON returned
@@ -238,6 +200,12 @@ paths:
       tags: [community]
       operationId: app.api.get_all_communities
       summary: Returns all information on all communities.
+      parameters:
+        - name: coordinates
+          in: query
+          required: true
+          type: string
+          description: Coordinates in longitude, latitude format.
       responses:
         200:
           description: Community details.
@@ -261,48 +229,13 @@ paths:
                       type: array
                       items:
                         type: array
+                        items:
+                          type: number
                         example: [[[-79.464620648, 43.692155606]]]
                     type:
                       type: string
                       example: "MultiPolygon"
                   description: Boundaries of a community in GeoJson format.
-  "/community/{coordinates}":
-    get:
-      tags: [community]
-      operationId: app.api.get_community_surrounding
-      summary: Returns the community containing the given set of coordinates.
-      parameters:
-        - name: coordinates
-          in: path
-          required: true
-          type: string
-          description: Coordinates in longitude, latitude format.
-      responses:
-        200:
-          description: A community that surrounds the given coordinates.
-          schema:
-            type: object
-            properties:
-              id:
-                type: integer
-                example: 1
-                description: Unique community identifier.
-              name:
-                type: string
-                example: "Danforth"
-                description: The name of a community.
-              boundaries:
-                type: object
-                properties:
-                  coordinates:
-                    type: array
-                    items:
-                      type: array
-                      example: [[[-79.464620648, 43.692155606]]]
-                  type:
-                    type: string
-                    example: "MultiPolygon"
-                description: Boundaries of a community in GeoJson format.
   "/donation":
     get:
       tags: [donation]
@@ -339,7 +272,7 @@ paths:
                           description: Unique community resource identifier.
     post:
       tags: [donation]
-      operationId: app.api.post_user
+      operationId: app.api.post_donation
       summary: Create a new donation for processing.
       parameters:
         - name: body
@@ -365,7 +298,7 @@ paths:
   "/donation/version":
     get:
       tags: [donation]
-      operationId: app.api.get_community_surrounding
+      operationId: app.api.get_donation_version
       summary: Returns the most recent version string.
       responses:
         200:
