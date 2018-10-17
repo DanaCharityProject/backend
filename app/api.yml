@@ -150,28 +150,28 @@ paths:
   "/communityresource":
     get:
       tags: [communityresource]
-      operationId: app.api.get_communityresource_list
+      operationId: app.api.get_communityresources
       summary: Returns community resources near a geographic point.
       parameters:
         - name: latitude
           in: query
           type: number
-          required: true
+          required: false
           description: Latitude
         - name: longitude
           in: query
           type: number
-          required: true
+          required: false
           description: Longitude
         - name: radius
           in: query
           type: number
-          required: true
+          required: false
           description: Radius (Km)
         - name: polygon_string
           in: query
           type: string
-          required: true
+          required: false
           description: the string representation of a polygon
       responses:
         200:
@@ -227,7 +227,7 @@ paths:
       parameters:
         - name: coordinates
           in: query
-          required: true
+          required: false
           type: string
           description: Coordinates in longitude, latitude format.
       responses:

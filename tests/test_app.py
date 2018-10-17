@@ -355,7 +355,7 @@ def test_get_communityresource_in_shape(client):
     assert community_resource2 is not None
     
     polygon_string = "POLYGON((43.660160 -79.398425,43.660360 -79.395625,43.658218 -79.395417,43.658514 -79.398372,43.660160 -79.398425))"
-    rv = client.get("/communityresource/{polygon_string}".format(polygon_string=polygon_string), headers=get_headers())
+    rv = client.get("/communityresource?polygon_string={polygon_string}".format(polygon_string=polygon_string), headers=get_headers())
 
     body = json.loads(rv.get_data(as_text=True))
     print(body)

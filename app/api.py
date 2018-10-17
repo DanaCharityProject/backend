@@ -1,4 +1,6 @@
 import json
+import connexion
+
 from connexion import NoContent
 from geopy.geocoders import Nominatim
 
@@ -64,6 +66,14 @@ def put_user_password(body):
 def get_user_token():
     return {"token": current_user().generate_auth_token()}, 201
 
+def get_communityresources(*args, **kwargs):
+    longitude, latitude, radius = connexion.request.args.get("longitude"), connexion.request.args.get("latitude"), connexion.request.args.get("radius")
+    polygon_string = connexion.request.args.get("polygon_string")
+
+    if longitude is not None and latitude is not None and radius is not None:
+        return get_communityresource_list(longitude, latitude, radius)
+    else:
+        return get_communityresource_in_shape(polygon_string)
 
 def get_communityresource_list(longitude, latitude, radius):
     return [{
