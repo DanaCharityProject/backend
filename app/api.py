@@ -135,3 +135,21 @@ def get_community_surrounding(coordinates):
             "name": res[0].name,
             "boundaries": res[1]
         }, 200
+
+
+def get_donation_version():
+    """Retrieves most up to date donation version code
+    
+        :returns: The most up to date donation version code
+    """
+    pass
+
+
+def post_donation(resourceId):
+    """Create a new donation code for given
+
+        :param resourceId: The resource ID
+        :returns: A 200 code acknowledging the donation version code was created. 
+    """
+    pass
+    
