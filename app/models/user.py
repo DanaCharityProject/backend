@@ -1,3 +1,9 @@
+"""
+User
+====================================
+The User module
+"""
+
 from flask import current_app
 from werkzeug.security import check_password_hash, generate_password_hash
 from ..validators import is_valid_username
@@ -14,6 +20,8 @@ USER_ROLE_ADMIN = "admin"
 
 
 class User(db.Model):
+    """The User Class"""
+
     __tablename__ = "users"
 
     user_id = db.Column(db.Integer, primary_key=True, index=True)
@@ -33,6 +41,11 @@ class User(db.Model):
         return check_password_hash(self.password_hash, password)
 
     def generate_auth_token(self, expiration=600):
+        """Generates a JSON Web Token which can be used to authenticate user requests.
+
+        :param expiration: How long, in seconds, is the token valid.
+        :returns: json web token encoded string
+        """
         token = {
             'user_id': self.user_id,
             'role': self.role,

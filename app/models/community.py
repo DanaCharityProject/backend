@@ -1,3 +1,8 @@
+"""
+Community
+====================================
+The Community module
+"""
 import os
 import shapefile
 import pygeoif

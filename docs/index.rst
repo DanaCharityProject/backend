@@ -1,10 +1,14 @@
-.. Dana documentation master file, created by
-   sphinx-quickstart on Tue Jul 31 19:07:05 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Dana's documentation!
 ================================
+
+.. automodule:: app.models.user
+   :members:
+
+.. automodule:: app.models.community
+   :members:
+
+.. automodule:: app.models.community_resource
+   :members:
 
 .. toctree::
    :maxdepth: 2

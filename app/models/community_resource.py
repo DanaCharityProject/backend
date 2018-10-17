@@ -1,3 +1,8 @@
+"""
+Community Resource
+====================================
+The Community Resource module
+"""
 import os
 import shapefile
 import pygeoif
