@@ -39,6 +39,11 @@ class User(db.Model):
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
+        """Checks hashed user password against plaintext password
+
+        :param password: plaintext password
+        :returns: True if password hashes match, false otherwise.
+        """
         return check_password_hash(self.password_hash, password)
 
     def generate_auth_token(self, expiration=600):
