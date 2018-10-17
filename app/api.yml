@@ -275,7 +275,7 @@ paths:
       operationId: app.api.post_donation
       summary: Create a new donation for processing.
       parameters:
-        - name: body
+        - name: resourceId
           in: body
           schema:
             type: object
