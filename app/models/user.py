@@ -8,12 +8,12 @@ from flask import current_app
 from werkzeug.security import check_password_hash, generate_password_hash
 from ..validators import is_valid_username
 from jwt import InvalidTokenError, ExpiredSignatureError
+from email.message import EmailMessage
 
 from .. import db
 
 import jwt
 import datetime
-
 
 USER_ROLE_USER = "user"
 USER_ROLE_ADMIN = "admin"
@@ -28,6 +28,7 @@ class User(db.Model):
     email = db.Column(db.String(256), unique=True, nullable=False, index=True)
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
+    active = db.Column(db.Boolean, default=False, nullable=False)
 
     @property
     def password(self):
@@ -52,7 +53,7 @@ class User(db.Model):
             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=expiration)
         }
 
-        return jwt.encode(token, current_app.config['SECRET_KEY'], algorithm='HS256')
+        return jwt.encode(token, current_app.config['SECRET_KEY'], algorithm='HS256').decode('utf-8')
 
     @classmethod
     def verify_auth_token(cls, token):
@@ -82,7 +83,13 @@ class User(db.Model):
         db.session.add(user)
         db.session.commit()
 
-        return user
+        # TODO: Figure out sending the email
+        email_hash = jwt.encode(
+            {'email' : user.email.lower()},
+            current_app.config['SECRET_KEY'],
+            algorithm='HS256').decode('utf-8')
+
+        return user, email_hash
 
     def edit_user(self, username):
         try:
@@ -93,6 +100,16 @@ class User(db.Model):
         except InvalidUserInfo:
             raise
 
+    @classmethod
+    def activate_user(cls, email_hash):
+        print(email_hash)
+        email_dict = jwt.decode(email_hash, current_app.config['SECRET_KEY'], algorithms=['HS256'])
+        user = cls.get_user_by_email(email_dict['email'])
+        if user is not None:
+            user.active = True
+            db.session.commit()
+            return True
+
     def change_password(self, password):
         self.password = password
 
@@ -102,7 +119,8 @@ class User(db.Model):
         return {
             "user_id": self.user_id,
             "email": self.email,
-            "role": self.role
+            "role": self.role,
+            "active": self.active
         }
     
     @classmethod

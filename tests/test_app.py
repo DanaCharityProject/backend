@@ -1,5 +1,7 @@
 import base64
 import json
+import jwt
+import os
 
 import pytest
 import pygeoif
@@ -59,18 +61,20 @@ def get_headers(basic_auth=None):
 def test_get_user(client):
     email = "Foo"
     password = "bar"
-    user = User.add_user(User.from_dict({
+    user, email_hash = User.add_user(User.from_dict({
         "email": email,
         "password": password
     }))
 
     assert user is not None
     assert User.get_user_by_email(email.upper()) is not None
+    assert email.lower() == jwt.decode(email_hash, 'secret-key', algorithms=['HS256'])['email']
     # user details with correct auth
     rv = client.get("/user", headers=get_headers(basic_auth=email + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
     assert rv.status_code == 200
     assert body["email"] == user.email
+    assert body["active"] == False
     # user details with correct auth but different case
     rv = client.get("/user", headers=get_headers(basic_auth=email.upper() + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
@@ -96,7 +100,7 @@ def test_get_user_token(client):
     email = "foo"
     password = "bar"
 
-    user = User.add_user(User.from_dict({
+    user, email_hash = User.add_user(User.from_dict({
         "email": email,
         "password": password
     }))
@@ -105,7 +109,26 @@ def test_get_user_token(client):
     rv = client.get("/user/token", headers=get_headers(basic_auth=email + ":" + password))
     body = json.loads(rv.get_data(as_text=True))
     assert rv.status_code == 201
-    assert models.user.User.verify_auth_token(body["token"]).email == user.email
+    return_email = models.user.User.verify_auth_token(body["token"]).email
+    assert return_email == user.email
+
+
+def test_get_user_activation(client):
+    email = "foo"
+    password = "bar"
+
+    user, email_hash = User.add_user(User.from_dict({
+        "email": email,
+        "password": password
+    }))
+
+    rv = client.get("/user/activate?email_hash={}".format(email_hash), headers=get_headers())
+    assert rv.status_code == 204
+
+    assert User.get_user_by_email(email).active
+
+    rv = client.get("/user/activate?email_hash={}".format('notahash'), headers=get_headers())
+    assert rv.status_code == 400
 
 
 @pytest.mark.skip()
@@ -661,18 +684,19 @@ def test_community_query_community_containing(client):
 
     assert community is not None
 
+    # These are flipped IRL, but doesn't matter for the test
     point_lat = 43.6439
     point_long = -79.3740
     expected_boundaries = [[[[43.643911, -79.376321], [43.644268, -79.372738], [43.642071, -79.37262], [43.641993, -79.375881], [43.643911, -79.376321]]]]
 
-    rv = client.get("/community/{},{}".format(point_lat, point_long), headers=get_headers())
+    rv = client.get("/community/search?longitude={}&latitude={}".format(point_lat, point_long), headers=get_headers())
     assert rv.status_code == 200
     body = json.loads(rv.get_data(as_text=True))
     assert body['id'] == community_id
     assert body['name'] == name
     assert json.loads(body['boundaries'])['coordinates'] == expected_boundaries
 
-    rv = client.get("/community/{},{}".format(43, 79), headers=get_headers())
+    rv = client.get("/community/search?longitude={}&latitude={}".format(43, 79), headers=get_headers())
     assert rv.status_code ==  200
     assert rv.get_data(as_text=True) is ''
 
