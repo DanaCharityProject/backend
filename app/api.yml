@@ -305,7 +305,7 @@ paths:
   "/donation":
     get:
       tags: [donation]
-      operationId: app.api.get_community_surrounding
+      operationId: app.api.get_donations
       summary: Returns all donations.
       responses:
         200:

@@ -154,6 +154,12 @@ def get_community_surrounding(longitude, latitude):
             "boundaries": res[1]
         }, 200
 
+def get_donations():
+    """Retrieves most up to date donation version code
+    
+        :returns: The most up to date donation version code
+    """
+    pass
 
 def get_donation_version():
     """Retrieves most up to date donation version code
