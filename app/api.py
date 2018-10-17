@@ -138,14 +138,18 @@ def get_community_surrounding(coordinates):
 
 
 def get_donation_version():
+    """Retrieves most up to date donation version code
+    
+        :returns: The most up to date donation version code
+    """
     pass
 
 
-def post_donation(name):
+def post_donation(resourceId):
+    """Create a new donation code for given
+
+        :param resourceId: The resource ID
+        :returns: A 200 code acknowledging the donation version code was created. 
+    """
     pass
-# def get_resource_by_radius(coordinates, radius):
-#     """
-#     cooridinates: the current position of where the user is.
-#     radius: the distance from which the user wants to see the resources around them.
-#     """
     
