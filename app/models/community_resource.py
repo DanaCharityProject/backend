@@ -35,6 +35,7 @@ class CommunityResource(db.Model):
         return self.coordinates
 
     def to_dict(self):
+        """Return a dictionary representation of this CommunityResource object."""
         return {
             "id": self.community_resource_id,
             "charity_number": self.charity_number,
@@ -51,6 +52,7 @@ class CommunityResource(db.Model):
 
     @classmethod
     def from_dict(cls, data):
+        """Create a CommunityResource object from a dict."""
         obj = cls(**data)
 
         if obj.coordinates is None:
@@ -60,6 +62,7 @@ class CommunityResource(db.Model):
 
     @classmethod
     def get_community_resource_by_id(cls, community_resource_id):
+        """Return a GeoJSON representation of the CommunityResource with the given id."""
         community_resource = cls.query.filter_by(community_resource_id=community_resource_id).first()
 
         if community_resource is None:
@@ -73,10 +76,14 @@ class CommunityResource(db.Model):
 
     @classmethod
     def get_community_resource_by_charity_number(cls, charity_number):
+        """Return the CommunityResource with the given charity number."""
         return cls.query.filter_by(charity_number=charity_number).first()
 
     @classmethod
     def add_community_resource(cls, resource):
+        """Add a given CommunityResource to the database. If there is a conflict,
+        the existing object in the database is overwritten.
+        """
         existing_resource = cls.query.filter_by(community_resource_id=resource.community_resource_id).first()
 
         if existing_resource is None:
@@ -90,6 +97,9 @@ class CommunityResource(db.Model):
     # Returns a list of resources within a given radius of latitude, longitude
     @classmethod
     def get_resources_by_radius(cls, longitude, latitude, radius):
+        """Given coordinates and a radius, return a list of CommunityResources within the
+        given radius around the given coordinates in GeoJSON format.
+        """
         return db.session.query(
                 CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
             ).filter(
@@ -98,6 +108,9 @@ class CommunityResource(db.Model):
     
     @classmethod
     def get_resources_in_shape(cls, polygon_string):
+        """Given a polygon, return a list of CommunityResources within the given polygon
+        in GeoJSON format.
+        """
         polygon = WKTElement(polygon_string, 4326)
         return db.session.query(
                 CommunityResource, func.ST_AsGeoJSON(CommunityResource.coordinates)
@@ -107,6 +120,7 @@ class CommunityResource(db.Model):
 
     @staticmethod
     def coordinates_from_address(address):
+        """Return the given address' coordinates."""
         geolocator = Nominatim()
         location = geolocator.geocode(address)
 
@@ -114,6 +128,7 @@ class CommunityResource(db.Model):
 
     @classmethod
     def edit_community_resource(cls, community_resource_id, new_name, new_lat, new_long, new_contact_name, new_email, new_phone_number, new_address, new_website, new_image_uri):
+        """Update and return the existing CommunityResource with the given id."""
         resource = cls.get_resource_by_id(community_resource_id)
 
         if resource is None:
@@ -145,6 +160,7 @@ class CommunityResource(db.Model):
 
     @staticmethod
     def long_lat_to_point(longitude, latitude):
+        """Return a WKTElement of the point with the given coordinates."""
         pointString = "POINT({} {})".format(longitude, latitude)
         return WKTElement(pointString, 4326)
     
@@ -157,6 +173,7 @@ class CommunityResource(db.Model):
 
     @staticmethod
     def _parse_shapefile_and_populate_db(file_path):
+        """Populate database with data from the shapefile with the given path."""
         if not os.path.exists(file_path):
             print(file_path + " does not exist")
         else:
