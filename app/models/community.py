@@ -20,6 +20,7 @@ class Community(db.Model):
     boundaries = Column(Geometry('MULTIPOLYGON', srid=4326), nullable=False)
 
     def to_dict(self):
+        """Return a dictionary representation of this Community object."""
         return {
             "id": self.id,
             "name": self.name,
@@ -28,14 +29,21 @@ class Community(db.Model):
     
     @classmethod
     def from_dict(cls, data):
+        """Create a Community object from a dict."""
         return cls(**data)
 
     @classmethod
     def get_all_communities (cls):
+        """Query the database and return a list of all Communities with their id, 
+        name and boundaries in GeoJSON format.
+        """
         return db.session.query(Community, func.ST_AsGeoJSON(Community.boundaries)).all()
 
     @classmethod
     def get_community_surrounding(cls, longitude, latitude):
+        """Get a Community with boundaries surrounding a given point specified
+        by longitude and latitude.  Returns the Community id, name and boundaries.
+        """
         return db.session.query(
                 Community, func.ST_AsGeoJSON(Community.boundaries)
             ).filter(
@@ -46,6 +54,9 @@ class Community(db.Model):
 
     @classmethod
     def add_comunity(cls, community):
+        """Add a given Community to the database.  If there is a conflict,
+        the existing object in the database is overwritten.
+        """
         existing_community = cls.query.filter_by(id=community.id).first()
 
         if existing_community is None:
@@ -63,6 +74,9 @@ class Community(db.Model):
 
     @staticmethod
     def _parse_shapefile_and_populate_db(file_path):
+        """Given a path to a shapefile containing Community information, 
+        parse the file and add each Community to the database.
+        """
         if not os.path.exists(file_path):
             print(file_path + " does not exist")
         else:
@@ -82,6 +96,9 @@ class Community(db.Model):
     
     @staticmethod
     def _longlat_to_latlong(geojson):
+        """Given a GeoJSON in dict form, reverses the order of
+        the coordinates.
+        """
         coordinates = geojson['coordinates']
         new_coordinates = ()
 
