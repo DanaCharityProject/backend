@@ -31,7 +31,7 @@ class User(db.Model):
     active = db.Column(db.Boolean, default=False, nullable=False)
     donation_code = db.Column(db.String(40), nullable=True)
     donation_code_is_stale = False
-    balance = db.Column(db.Double, default=0)
+    balance = db.Column(db.Integer, default=0)
 
 
     @property
@@ -42,13 +42,13 @@ class User(db.Model):
     def password(self, password):
         self.password_hash = generate_password_hash(password)
 
-    @balance.setter
-    def balance(self, balance):
-        self.balance = balance
+    # @balance.setter
+    # def balance(self, balance):
+    #     self.balance = balance
 
-    @balance.getter
-    def balance(self, balance):
-        return self.balance
+    # @balance.getter
+    # def balance(self, balance):
+    #     return self.balance
 
     def reduce_balance(self, amount):
         self.balance = self.balance - amount

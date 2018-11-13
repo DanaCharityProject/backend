@@ -307,6 +307,12 @@ paths:
       tags: [donation]
       operationId: app.api.get_donations
       summary: Returns all donations.
+      parameters:
+        - name: userId
+          in: path
+          required: true
+          type: integer
+          description: Unique user identifier.
       responses:
         200:
           description: A history of all donations made by the user.
@@ -359,16 +365,16 @@ paths:
       responses:
         201:
           description: New donation created.
-        409:
-          description: Conflict exists in version
+        422:
+          description: Insufficient funds
   "/donation/version":
     get:
       tags: [donation]
       operationId: app.api.get_donation_code
-      summary: Returns the most recent version string.
+      summary: Returns the most recent version string
       responses:
         200:
-          description: An optimistic offline version lock.
+          description: An optimistic offline version lock
           schema:
             type: object
             properties:
@@ -390,23 +396,7 @@ paths:
           200:
             description: An optimistic offline version lock validator
           412:
-            description: Code supplied is stale or nonexistant.
-  "/donation/transaction":
-    get:
-      tags: [donation]
-      operationId: app.api.make_transaction
-      summary: Make a transaction if the funds exist
-      parameters:
-      - name: amount
-        in: path
-        required: true
-        type: number
-        description: Amount needed for transaction
-      responses:
-        200:
-          description: Transaction successful.
-        422:
-          description: Insufficient funds.
+            description: Conflict exists in version
 securityDefinitions:
   basic:
     type: basic

@@ -172,6 +172,15 @@ def get_donation_code():
     """
     return current_user().get_donation_code()
 
+#TODO: Implement
+def get_donations(userId):
+    """History of all donations made by user
+        
+        :param: An ID identifying the user
+        :return: A list of donations made by this user
+    """
+    pass
+
 
 def validate_donation_code(code):
     """Validate if code is most current
@@ -183,14 +192,14 @@ def validate_donation_code(code):
     if response is not None:
         return {
             "new_version": response
-        }, 200
+        }, 201
     return {
         "response": "Stale or invalid donation code supplied."
     }, 412
     
 
-def make_transaction(amount):
-    """Make a transaction if enough funds exist
+def post_donation(amount):
+    """Make a donation if enough funds exist
 
     :param: Amount needed for transaction
     """
@@ -203,8 +212,8 @@ def make_transaction(amount):
         current_user().reduce_balance(amount)
         return {
             "current_balance" : current_user().balance()
-        }, 200
+        }, 201
 
     return {
         "response" : "Insuffcient funds"
-    },51
+    },409
