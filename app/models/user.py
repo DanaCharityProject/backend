@@ -29,6 +29,10 @@ class User(db.Model):
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     active = db.Column(db.Boolean, default=False, nullable=False)
+    donation_code = db.Column(db.String(40), nullable=True)
+    donation_code_is_stale = False
+    balance = db.Column(db.Double, default=0)
+
 
     @property
     def password(self):
@@ -37,6 +41,17 @@ class User(db.Model):
     @password.setter
     def password(self, password):
         self.password_hash = generate_password_hash(password)
+
+    @balance.setter
+    def balance(self, balance):
+        self.balance = balance
+
+    @balance.getter
+    def balance(self, balance):
+        return self.balance
+
+    def reduce_balance(self, amount):
+        self.balance = self.balance - amount
 
     def verify_password(self, password):
         """Checks hashed user password against plaintext password
@@ -172,7 +187,49 @@ class User(db.Model):
             "role": self.role,
             "active": self.active
         }
-    
+
+
+    def get_donation_code(self):
+        """ Returns a code that will allow the user to donate if 
+        the code is up-to-date with the database.
+
+        :return: The current donation code
+        """
+        if donation_code is None or donation_code_is_stale:
+            return create_donation_code()
+        return donation_code
+
+
+    def create_donation_code(self):
+        """ Creates a randomly generated integer between 1-256 that 
+        allows the user to donate if the correct code is held.
+        
+        :return: A randomly generated date hash
+        """
+        self.donation_code = hashlib.sha1(str(datetime.now())).hexdigest()
+        return self.donation_code
+
+
+    def validate_donation_code(self, code):
+        """ Check if the given code has not matches the current one from the database
+
+        :return: A new code if the given code is the most recent, None otherwise
+        """
+        if self.donation_code == code:
+            create_donation_code()
+            return self.donation_code
+        else:
+            False
+
+
+    def has_suffcient_funds(self, amount):
+        """Queries balance to check if user has sufficient funds to spend the given amount
+
+        :param: Amount the user wants to check if they can spend
+        """
+        return amount <= self.balacnce
+
+
     @classmethod
     def from_dict(cls, data):
         """A dictionary of all the values of this user object.??

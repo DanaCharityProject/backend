@@ -138,7 +138,7 @@ paths:
       summary: Generate JSON Web Token
       responses:
         201:
-          description: New token Created
+          description: New token Created.
           schema:
             type: object
             properties:
@@ -295,8 +295,8 @@ paths:
                 properties:
                   coordinates:
                     type: array
-                    items:
-                      type: array
+                    items: 
+                      type: integer
                       example: [[[-79.464620648, 43.692155606]]]
                   type:
                     type: string
@@ -364,7 +364,7 @@ paths:
   "/donation/version":
     get:
       tags: [donation]
-      operationId: app.api.get_donation_version
+      operationId: app.api.get_donation_code
       summary: Returns the most recent version string.
       responses:
         200:
@@ -376,6 +376,37 @@ paths:
                 type: string
                 example: 487b4f50-e151-4de7-b6bb-5d9725928dc3
                 description: Unique version identifier.
+    put:
+        tags: [donation]
+        operationId: app.api.validate_donation_code
+        summary: Returns True if successfully validated code
+        parameters:
+        - name: code
+          in: query
+          required: true
+          type: string
+          description: User given version
+        responses:
+          200:
+            description: An optimistic offline version lock validator
+          412:
+            description: Code supplied is stale or nonexistant.
+  "/donation/transaction":
+    get:
+      tags: [donation]
+      operationId: app.api.make_transaction
+      summary: Make a transaction if the funds exist
+      parameters:
+      - name: amount
+        in: path
+        required: true
+        type: number
+        description: Amount needed for transaction
+      responses:
+        200:
+          description: Transaction successful.
+        422:
+          description: Insufficient funds.
 securityDefinitions:
   basic:
     type: basic

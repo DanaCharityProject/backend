@@ -164,26 +164,47 @@ def get_community_surrounding(longitude, latitude):
             "boundaries": res[1]
         }, 200
 
-def get_donations():
+
+def get_donation_code():
     """Retrieves most up to date donation version code
     
         :returns: The most up to date donation version code
     """
-    pass
-
-def get_donation_version():
-    """Retrieves most up to date donation version code
-    
-        :returns: The most up to date donation version code
-    """
-    pass
+    return current_user().get_donation_code()
 
 
-def post_donation(resourceId):
-    """Create a new donation code for given
+def validate_donation_code(code):
+    """Validate if code is most current
 
         :param resourceId: The resource ID
         :returns: A 200 code acknowledging the donation version code was created. 
     """
-    pass
+    response = current_user().validate_donation_code(code)
+    if response is not None:
+        return {
+            "new_version": response
+        }, 200
+    return {
+        "response": "Stale or invalid donation code supplied."
+    }, 412
     
+
+def make_transaction(amount):
+    """Make a transaction if enough funds exist
+
+    :param: Amount needed for transaction
+    """
+    if amount <= 0:
+        return {
+            "response" : "Invalid input, negative numbers or 0 not allowed"
+        }, 400
+
+    if current_user().has_suffcient_funds(amount):
+        current_user().reduce_balance(amount)
+        return {
+            "current_balance" : current_user().balance()
+        }, 200
+
+    return {
+        "response" : "Insuffcient funds"
+    },51
