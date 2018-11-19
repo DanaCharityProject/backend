@@ -12,6 +12,8 @@ from .validators import is_valid_password, is_valid_email, is_valid_phone_number
 from sqlalchemy import func
 from jwt import InvalidTokenError, ExpiredSignatureError
 
+from . import rbac
+
 import jwt
 import sys
 
@@ -144,7 +146,7 @@ def put_communityresource(community_resource_id, body):
         return NoContent, 400
     return NoContent, 200
 
-
+# @rbac.deny(['anonymous'], methods=['GET'])
 def get_all_communities():
     return [{
         "id": community.id,

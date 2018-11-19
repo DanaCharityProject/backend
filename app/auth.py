@@ -2,6 +2,7 @@ from flask import g
 from flask_httpauth import HTTPBasicAuth, HTTPTokenAuth, MultiAuth
 
 from .models.user import User
+from . import rbac
 
 basic_auth = HTTPBasicAuth()
 token_auth = HTTPTokenAuth()
@@ -37,3 +38,5 @@ def current_user():
 
 def current_role():
     return g.current_role
+
+rbac.set_user_loader(current_user)

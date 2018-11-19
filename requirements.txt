@@ -12,6 +12,7 @@ Flask==0.12.2
 Flask-Cors==3.0.3
 Flask-HTTPAuth==3.2.3
 Flask-SQLAlchemy==2.2
+Flask-RBAC==0.2.1
 GeoAlchemy2==0.4.2
 geopy==1.11.0
 idna==2.5

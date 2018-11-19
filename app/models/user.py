@@ -9,6 +9,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from ..validators import is_valid_username
 from jwt import InvalidTokenError, ExpiredSignatureError
 from email.message import EmailMessage
+from flask_rbac import UserMixin
 
 from .. import db
 
@@ -18,8 +19,13 @@ import datetime
 USER_ROLE_USER = "user"
 USER_ROLE_ADMIN = "admin"
 
+users_roles = db.Table(
+    'users_roles',
+    db.Column('user_id', db.Integer, db.ForeignKey('users.user_id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('role.id'))
+)
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     """The User Class"""
 
     __tablename__ = "users"
@@ -29,6 +35,24 @@ class User(db.Model):
     role = db.Column(db.String(64), default=USER_ROLE_USER, nullable=False)
     password_hash = db.Column(db.String(256), nullable=False)
     active = db.Column(db.Boolean, default=False, nullable=False)
+    roles = db.relationship(
+        'Role',
+        secondary=users_roles,
+        backref=db.backref('users', lazy='dynamic'),
+        primaryjoin=(users_roles.c.user_id == user_id),
+        lazy='dynamic'
+    )
+
+    def add_role(self, role):
+        self.roles.append(role)
+
+    def add_roles(self, roles):
+        for role in roles:
+            self.add_role(role)
+
+    def get_roles(self):
+        for role in self.roles:
+            yield role
 
     @property
     def password(self):
@@ -53,7 +77,7 @@ class User(db.Model):
         :returns: json web token encoded string
         """
         token = {
-            'user_id': self.user_id,
+            'id': self.id,
             'role': self.role,
             'exp': datetime.datetime.utcnow() + datetime.timedelta(seconds=expiration)
         }
@@ -72,7 +96,7 @@ class User(db.Model):
     def get_user_by_token(cls, token):
         try:
             data = jwt.decode(token, current_app.config['SECRET_KEY'], algorithms=['HS256'])
-            return cls.query.get(data["user_id"])
+            return cls.query.get(data["id"])
         except ExpiredSignatureError:
             return None    # valid token, but expired
         except InvalidTokenError:
@@ -122,7 +146,7 @@ class User(db.Model):
 
     def to_dict(self):
         return {
-            "user_id": self.user_id,
+            "id": self.id,
             "email": self.email,
             "role": self.role,
             "active": self.active
