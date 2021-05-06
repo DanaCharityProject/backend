@@ -9,7 +9,7 @@ coverage==4.5.1
 factory-boy==2.11.1
 Faker==0.8.16
 Flask==0.12.2
-Flask-Cors==3.0.3
+Flask-Cors==3.0.9
 Flask-HTTPAuth==3.2.3
 Flask-SQLAlchemy==2.2
 GeoAlchemy2==0.4.2
